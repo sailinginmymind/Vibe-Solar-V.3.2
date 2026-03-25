@@ -405,17 +405,17 @@ for (let h = startH; h <= endH; h++) {
         }
 
         // 4. Gestore del Click (Quello che volevi tu)
-        bar.onclick = () => {
+      bar.onclick = () => {
             const detail = document.getElementById('detail-display');
             if (detail) {
                 detail.innerHTML = `
-                    <div style="margin-bottom: 4px;">
-                        <span style="color:var(--accento); font-weight:bold; font-size:1.2rem;">
-                            ORE ${h}:00 → ${Math.round(hP)} W
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                        <span style="color:var(--accento); font-weight:bold; font-size:1.1rem; text-transform: uppercase;">
+                            ORE ${h}:00 &nbsp;•&nbsp; ${Math.round(hP)} W
                         </span>
-                    </div>
-                    <div style="color: #94a3b8; font-size: 0.85rem; letter-spacing: 0.5px; text-transform: uppercase;">
-                        Radiazione: <span style="color: #f1f5f9;">${Math.round(hRadiation)} W/m²</span>
+                        <span style="color: #94a3b8; font-size: 0.8rem; margin-top: 2px; letter-spacing: 1px;">
+                            RADIAZIONE: <span style="color: #f1f5f9;">${Math.round(hRadiation)} W/m²</span>
+                        </span>
                     </div>
                 `;
             }
