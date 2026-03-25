@@ -210,7 +210,7 @@ function initSliders() {
                 updateAll();
 
                 // Feedback visivo sul tasto
-                btnReset.innerText = 'RESETTATO! ✅';
+                btnReset.innerText = 'FATTO! ✅';
                 setTimeout(() => { btnReset.innerText = '0° 📐'; }, 1000);
             }
         }); 
