@@ -810,24 +810,53 @@ h2 {
     margin-bottom: 20px;
 }
 
-/* Pulsante AUTO */
-#btn-auto-tilt {
+/* Contenitore per i pulsanti AUTO e RESET */
+.tilt-actions-container {
+    display: flex;
+    gap: 10px;        /* Spazio tra i due tasti */
     width: 100%;
-    background: var(--bg-badge);
-    border: 1px solid var(--accento);
-    color: var(--accento);
-    padding: 12px;
+}
+
+/* Stile base condiviso per entrambi i pulsanti */
+#btn-auto-tilt, 
+#btn-reset-tilt {
+    padding: 12px 5px; /* Padding verticale coerente */
     border-radius: 8px;
     font-weight: 900;
-    font-size: 12px;
+    font-size: 11px;   /* Leggermente ridotto per far stare il testo nel tasto piccolo */
     letter-spacing: 1px;
     cursor: pointer;
     transition: all 0.3s;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Rapporto 2/3 per il tasto AUTO (Stile originale) */
+#btn-auto-tilt {
+    flex: 2; 
+    background: var(--bg-badge);
+    border: 1px solid var(--accento);
+    color: var(--accento);
 }
 
 #btn-auto-tilt:hover {
     background: var(--accento);
     color: var(--bg-puro);
+}
+
+/* Rapporto 1/3 per il tasto RESET (Stile più discreto) */
+#btn-reset-tilt {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #475569; /* Colore ardesia come le label */
+    color: #94a3b8;
+}
+
+#btn-reset-tilt:hover {
+    background: #475569;
+    color: white;
 }
 
 /* Suggerimento Ottimale */
