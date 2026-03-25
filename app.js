@@ -124,10 +124,11 @@ function initSliders() {
     if (tiltSlider) {
         tiltSlider.value = state.panelTilt || 0;
         if (tiltDisplay) tiltDisplay.innerText = state.panelTilt || 0;
-
+        tiltSlider.style.setProperty('--value', (tiltSlider.value / 90 * 100) + '%');
         tiltSlider.addEventListener('input', (e) => {
             const val = e.target.value;
             if (tiltDisplay) tiltDisplay.innerText = val;
+            e.target.style.setProperty('--value', (val / 90 * 100) + '%');
             state.panelTilt = parseInt(val);
             localStorage.setItem('vibe_panel_tilt', val);
             updateAll();
@@ -169,6 +170,7 @@ function initSliders() {
 
             tiltSlider.value = idealTilt;
             if (tiltDisplay) tiltDisplay.innerText = idealTilt;
+            tiltSlider.style.setProperty('--value', (idealTilt / 90 * 100) + '%');
             state.panelTilt = idealTilt;
             localStorage.setItem('vibe_panel_tilt', idealTilt);
 
