@@ -177,13 +177,44 @@ function initSliders() {
             if (hintBox)    hintBox.style.display = 'block';
             if (optimumVal) optimumVal.innerText = idealTilt;
 
-            btnAuto.innerText = 'INCLINAZIONE OTTIMALE! ✅';
-            setTimeout(() => { btnAuto.innerText = 'AUTO ✨'; }, 1500);
-            updateAll();
-        });
-    }
-}
+            btnAuto.innerText = 'INCLINAZIONE OTTIMALE! ✅';
+            setTimeout(() => { btnAuto.innerText = 'AUTO ✨'; }, 1500);
+            updateAll();
+        });
+    }
+            // Pulsante RESET TILT (Porta a 0°)
+const btnReset = document.getElementById('btn-reset-tilt');
+if (btnReset) {
+    btnReset.addEventListener('click', () => {
+        const tiltSlider = document.getElementById('tilt-slider');
+        const tiltDisplay = document.getElementById('tilt-val');
 
+        if (tiltSlider) {
+            const resetVal = 0;
+            
+            // 1. Aggiorna lo stato e il valore dello slider
+            tiltSlider.value = resetVal;
+            state.panelTilt = resetVal;
+            localStorage.setItem('vibe_panel_tilt', resetVal);
+
+            // 2. Aggiorna la UI (Testo e riempimento barra)
+            if (tiltDisplay) tiltDisplay.innerText = resetVal;
+            tiltSlider.style.setProperty('--value', '0%');
+
+            // 3. Nasconde il suggerimento "Inclinazione Ottimale" se era aperto
+            const hintBox = document.getElementById('tilt-hint');
+            if (hintBox) hintBox.style.display = 'none';
+
+            // 4. Ricalcola tutto
+            updateAll();
+
+            // Feedback visivo sul tasto
+            btnReset.innerText = 'RESETTATO! ✅';
+            setTimeout(() => { btnReset.innerText = '0° 📐'; }, 1000);
+             }
+        });
+    }
+}
 /* =========================================================
    3. LOGICA GPS E COORDINATE
    ========================================================= */
