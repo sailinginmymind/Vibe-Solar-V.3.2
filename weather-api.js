@@ -53,14 +53,11 @@ const WeatherAPI = {
      */
     async fetchForecast(lat, lng, date, updateInputs = false) {
         try {
-           const url = 
-    `https://api.open-meteo.com/v1/forecast` +
-    `?latitude=${lat}&longitude=${lng}` +
-    // Aggiunto shortwave_radiation alla lista hourly
-    `&hourly=temperature_2m,relative_humidity_2m,cloud_cover,wind_speed_10m,shortwave_radiation` + 
-    `&daily=sunrise,sunset` +
-    `&timezone=auto` +
-    `&start_date=${date}&end_date=${date}`;
+           const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}` +
+            `&hourly=temperature_2m,relative_humidity_2m,cloud_cover,wind_speed_10m,shortwave_radiation` + // <--- AGGIUNTO QUI
+            `&daily=sunrise,sunset` +
+            `&timezone=auto` +
+            `&start_date=${date}&end_date=${date}`;
             const response = await fetch(url);
             const data     = await response.json();
 
