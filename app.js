@@ -265,8 +265,14 @@ async function updateAll(isManualTime = false) {
     const timeInput = document.getElementById('input-time');
 
     if (!lat || !lng) return;
-    if (!isGpsSyncing) updateCityName(lat, lng);
 
+    // 1. AGGIORNAMENTO POSIZIONE (Città)
+    // Chiamiamo updateCityName solo se non siamo in fase di sync GPS hardware
+    if (!isGpsSyncing && typeof updateCityName === 'function') {
+        updateCityName(lat, lng);
+    }
+
+    // 2. GESTIONE ORARIO
     if (timeInput && !timeInput.value) {
         const now = new Date();
         timeInput.value = now.getHours().toString().padStart(2, '0') + ':' +
@@ -275,6 +281,7 @@ async function updateAll(isManualTime = false) {
 
     try {
         const dateStr = dataSelezionata.toISOString().split('T')[0];
+        // Recupero dati meteo (inclusa radiazione)
         state.weatherData = await WeatherAPI.fetchForecast(lat, lng, dateStr, !isManualTime);
 
         if (!state.weatherData || !state.weatherData.hourly) return;
@@ -289,13 +296,14 @@ async function updateAll(isManualTime = false) {
         const cloudCover = hourly.cloud_cover ? (hourly.cloud_cover[hourIdx] ?? 0) : 0;
         const radiation  = hourly.shortwave_radiation ? (hourly.shortwave_radiation[hourIdx] ?? 0) : 0;
 
+        // 3. AGGIORNAMENTO UI METEO
         document.getElementById('r-wind').innerText          = Math.round(hourly.wind_speed_10m[hourIdx]) + ' km/h';
         document.getElementById('r-hum').innerText           = hourly.relative_humidity_2m[hourIdx] + '%';
         document.getElementById('r-temp').innerText          = Math.round(hourly.temperature_2m[hourIdx]) + '°C';
         
-        // --- LOGICA DI VISUALIZZAZIONE DINAMICA ---
+        // Switch dinamico Nubi / Radiazione
         const cloudValueEl = document.getElementById('r-cloud-percent');
-        const cloudLabelEl = cloudValueEl.nextElementSibling; // Seleziona lo span con classe "sub-label"
+        const cloudLabelEl = cloudValueEl.nextElementSibling;
         
         if (showRadiation) {
             cloudValueEl.innerText = Math.round(radiation) + ' W/m²';
@@ -304,7 +312,6 @@ async function updateAll(isManualTime = false) {
             cloudValueEl.innerText = cloudCover + '%';
             if (cloudLabelEl) cloudLabelEl.innerText = 'NUBI';
         }
-        // ------------------------------------------
 
         const sunrise = daily.sunrise[0].split('T')[1].substring(0, 5);
         const sunset  = daily.sunset[0].split('T')[1].substring(0, 5);
@@ -318,6 +325,7 @@ async function updateAll(isManualTime = false) {
         const progress    = (hDec - sunH) / (setH - sunH);
         const sunAltitude = (hDec >= sunH && hDec <= setH) ? Math.sin(progress * Math.PI) * 65 : 0;
 
+        // 4. CALCOLO POTENZA (Precisione Fisica)
         const pServ = SolarEngine.calculatePowerByRadiation(state.panelWp,   radiation, state.panelTilt, sunAltitude);
         const pPS   = SolarEngine.calculatePowerByRadiation(state.panelPsWp, radiation, state.panelTilt, sunAltitude);
 
