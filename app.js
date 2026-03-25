@@ -175,7 +175,7 @@ function initSliders() {
             if (hintBox)    hintBox.style.display = 'block';
             if (optimumVal) optimumVal.innerText = idealTilt;
 
-            btnAuto.innerText = 'COPIATO! ✅';
+            btnAuto.innerText = 'INCLINAZIONE OTTIMALE! ✅';
             setTimeout(() => { btnAuto.innerText = 'AUTO ✨'; }, 1500);
             updateAll();
         });
