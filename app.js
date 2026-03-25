@@ -360,8 +360,8 @@ async function updateAll(isManualTime = false) {
         const sunAltitude = (hDec >= sunH && hDec <= setH) ? Math.sin(progress * Math.PI) * 65 : 0;
 
         // 4. CALCOLO POTENZA (Precisione Fisica)
-        const pServ = SolarEngine.calculatePowerByRadiation(state.panelWp,   radiation, state.panelTilt, sunAltitude);
-        const pPS   = SolarEngine.calculatePowerByRadiation(state.panelPsWp, radiation, state.panelTilt, sunAltitude);
+        const pServ = SolarEngine.calculatePowerByRadiation(hDec, sunH, setH, state.panelWp, radiation, state.panelTilt, sunAltitude);
+        const pPS   = SolarEngine.calculatePowerByRadiation(hDec, sunH, setH, state.panelPsWp, radiation, state.panelTilt, sunAltitude);
 
         document.getElementById('w_out').innerText = Math.round(pServ + pPS) + ' W';
         const elServ = document.getElementById('w_services');
@@ -417,8 +417,9 @@ for (let h = startH; h <= endH; h++) {
         // 1. Recupera la radiazione specifica per quell'ora
         const hRadiation = state.weatherData.hourly.shortwave_radiation ? (state.weatherData.hourly.shortwave_radiation[h] || 0) : 0;
         
-        // 2. Calcola la potenza (W) per quell'ora
+     // 2. Calcola la potenza (W) per quell'ora
         const hP = SolarEngine.calculatePowerByRadiation(
+            h, sunH, setH,             
             state.panelWp + state.panelPsWp, 
             hRadiation, 
             state.panelTilt, 
