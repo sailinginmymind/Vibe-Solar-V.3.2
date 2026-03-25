@@ -368,22 +368,22 @@ function updateReportUI(totalPower, sunH, setH) {
     const timeInput  = document.getElementById('input-time');
     const currentH   = (timeInput && timeInput.value) ? parseInt(timeInput.value.split(':')[0]) : -1;
 
-    for (let h = startH; h <= endH; h++) {
-        const hProgress  = (h - sunH) / (setH - sunH);
-        const hAltitude  = Math.max(0, Math.sin(hProgress * Math.PI) * 65);
-        
-        // 1. Recupero della radiazione specifica per l'ora del ciclo
-        const hRadiation = state.weatherData.hourly.shortwave_radiation ? (state.weatherData.hourly.shortwave_radiation[h] || 0) : 0;
-        
-        // 2. Uso del nuovo metodo basato sulla radiazione reale invece che cloud_cover
-        const hP = SolarEngine.calculatePowerByRadiation(
-            state.panelWp + state.panelPsWp, 
-            hRadiation, 
-            state.panelTilt, 
-            hAltitude
-        );
-        
-        dailyTotal += hP;
+for (let h = startH; h <= endH; h++) {
+    const hProgress  = (h - sunH) / (setH - sunH);
+    const hAltitude  = Math.max(0, Math.sin(hProgress * Math.PI) * 65);
+    
+    // Recupera la radiazione specifica per quell'ora dal dataset scaricato
+    const hRadiation = state.weatherData.hourly.shortwave_radiation ? (state.weatherData.hourly.shortwave_radiation[h] || 0) : 0;
+    
+    // Usa il nuovo calcolo fisico
+    const hP = SolarEngine.calculatePowerByRadiation(
+        state.panelWp + state.panelPsWp, 
+        hRadiation, 
+        state.panelTilt, 
+        hAltitude
+    );
+    
+    dailyTotal += hP;
 
         const bar = document.createElement('div');
         bar.className    = 'bar';
