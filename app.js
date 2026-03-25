@@ -330,17 +330,25 @@ async function updateAll(isManualTime = false) {
         const cloudCover = hourly.cloud_cover ? (hourly.cloud_cover[hourIdx] ?? 0) : 0;
         const radiation  = hourly.shortwave_radiation ? (hourly.shortwave_radiation[hourIdx] ?? 0) : 0;
 
-        // 3. AGGIORNAMENTO UI METEO
+       // 3. AGGIORNAMENTO UI METEO
         document.getElementById('r-wind').innerText          = Math.round(hourly.wind_speed_10m[hourIdx]) + ' km/h';
         document.getElementById('r-hum').innerText           = hourly.relative_humidity_2m[hourIdx] + '%';
         document.getElementById('r-temp').innerText          = Math.round(hourly.temperature_2m[hourIdx]) + '°C';
         
-        // Switch dinamico Nubi / Radiazione
+        // Switch dinamico Nubi / Radiazione con controllo NOTTE
         const cloudValueEl = document.getElementById('r-cloud-percent');
         const cloudLabelEl = cloudValueEl.nextElementSibling;
         
+        // Calcoliamo i limiti alba/tramonto per azzerare la radiazione
+        const sunriseStr = daily.sunrise[0].split('T')[1].substring(0, 5);
+        const sunsetStr  = daily.sunset[0].split('T')[1].substring(0, 5);
+        const sH = SolarEngine.timeToDecimal(sunriseStr);
+        const eH = SolarEngine.timeToDecimal(sunsetStr);
+
         if (showRadiation) {
-            cloudValueEl.innerText = Math.round(radiation) + ' W/m²';
+            // Se l'ora attuale (hDec) è fuori dalla fascia luce, forza a 0
+            const radiationEffettiva = (hDec < sH || hDec > eH) ? 0 : radiation;
+            cloudValueEl.innerText = Math.round(radiationEffettiva) + ' W/m²';
             if (cloudLabelEl) cloudLabelEl.innerText = 'RADIAZIONE';
         } else {
             cloudValueEl.innerText = cloudCover + '%';
