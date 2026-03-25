@@ -377,41 +377,50 @@ function updateReportUI(totalPower, sunH, setH) {
     const currentH   = (timeInput && timeInput.value) ? parseInt(timeInput.value.split(':')[0]) : -1;
 
 for (let h = startH; h <= endH; h++) {
-    const hProgress  = (h - sunH) / (setH - sunH);
-    const hAltitude  = Math.max(0, Math.sin(hProgress * Math.PI) * 65);
-    
-    // Recupera la radiazione specifica per quell'ora dal dataset scaricato
-    const hRadiation = state.weatherData.hourly.shortwave_radiation ? (state.weatherData.hourly.shortwave_radiation[h] || 0) : 0;
-    
-    // Usa il nuovo calcolo fisico
-    const hP = SolarEngine.calculatePowerByRadiation(
-        state.panelWp + state.panelPsWp, 
-        hRadiation, 
-        state.panelTilt, 
-        hAltitude
-    );
-    
-    dailyTotal += hP;
+        const hProgress  = (h - sunH) / (setH - sunH);
+        const hAltitude  = Math.max(0, Math.sin(hProgress * Math.PI) * 65);
+        
+        // 1. Recupera la radiazione specifica per quell'ora
+        const hRadiation = state.weatherData.hourly.shortwave_radiation ? (state.weatherData.hourly.shortwave_radiation[h] || 0) : 0;
+        
+        // 2. Calcola la potenza (W) per quell'ora
+        const hP = SolarEngine.calculatePowerByRadiation(
+            state.panelWp + state.panelPsWp, 
+            hRadiation, 
+            state.panelTilt, 
+            hAltitude
+        );
 
+        dailyTotal += hP;
+
+        // 3. Crea l'elemento visivo della barra
         const bar = document.createElement('div');
         bar.className    = 'bar';
         bar.style.height = Math.max(5, (hP / maxPotenza * 100)) + '%';
-        bar.style.opacity = '1';
-
+        
+        // Colora la barra dell'ora attuale
         if (h === currentH) {
             bar.style.background = 'var(--accento)';
             bar.style.boxShadow  = '0 0 12px var(--accento)';
-        } else {
-            bar.style.background = ''; 
-            bar.style.boxShadow  = 'none';
         }
 
+        // 4. Gestore del Click (Quello che volevi tu)
         bar.onclick = () => {
             const detail = document.getElementById('detail-display');
             if (detail) {
-                detail.innerHTML = `<span style="color:var(--accento); font-weight:bold;">ORE ${h}:00 → ${Math.round(hP)} W</span>`;
+                detail.innerHTML = `
+                    <div style="margin-bottom: 4px;">
+                        <span style="color:var(--accento); font-weight:bold; font-size:1.2rem;">
+                            ORE ${h}:00 → ${Math.round(hP)} W
+                        </span>
+                    </div>
+                    <div style="color: #94a3b8; font-size: 0.85rem; letter-spacing: 0.5px; text-transform: uppercase;">
+                        Radiazione: <span style="color: #f1f5f9;">${Math.round(hRadiation)} W/m²</span>
+                    </div>
+                `;
             }
         };
+
         chart.appendChild(bar);
     }
 
