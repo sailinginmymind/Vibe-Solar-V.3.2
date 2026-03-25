@@ -419,7 +419,7 @@ for (let h = startH; h <= endH; h++) {
                             </span>
                         </div>
                         <div style="color: #94a3b8; font-size: 0.75rem; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 800;">
-                            Radiazione: <span style="color: #f1f5f9;">${Math.round(hRadiation)} W/m²</span>
+                            Radiazione: <span style="color: #fbbf24;">${Math.round(hRadiation)} W/m²</span>
                         </div>
                     </div>
                 `;
