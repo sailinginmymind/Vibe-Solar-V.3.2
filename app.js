@@ -407,30 +407,40 @@ for (let h = startH; h <= endH; h++) {
         }
 
         // 4. Gestore del Click (Quello che volevi tu)
-     bar.onclick = () => {
-            const detail = document.getElementById('detail-display');
-            if (detail) {
-                detail.innerHTML = `
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2;">
-                        <div style="margin-bottom: 2px;">
-                            <span style="color: #fbbf24; font-weight: 900; font-size: 1.2rem; text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);">
-                                ORE ${h}:00
-                            </span>
-                            <span style="color: var(--accento); font-weight: 900; font-size: 1.2rem; margin-left: 5px;">
-                                • ${Math.round(hP)} W
-                            </span>
-                        </div>
-                        <div style="color: #94a3b8; font-size: 0.75rem; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 800;">
-                            Radiazione: <span style="color: #fbbf24;">${Math.round(hRadiation)} W/m²</span>
-                        </div>
-                    </div>
-                `;
-                // 3. Facciamo sparire il contenuto dopo 4 secondi (4000ms)
-                chartSelectionTimer = setTimeout(() => {
-                detail.innerHTML = ''; 
-                }, 4000);
-            }
-        };
+    // 4. Gestore del Click con Reset del Timer
+bar.onclick = () => {
+    const detail = document.getElementById('detail-display');
+    if (detail) {
+        // --- QUESTA È LA PARTE CRUCIALE ---
+        // Se c'è un timer già attivo (da un click precedente), lo annulliamo subito
+        if (chartSelectionTimer) {
+            clearTimeout(chartSelectionTimer);
+        }
+
+        // Mostriamo i nuovi dati
+        detail.innerHTML = `
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2;">
+                <div style="margin-bottom: 2px;">
+                    <span style="color: #fbbf24; font-weight: 900; font-size: 1.2rem; text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);">
+                        ORE ${h}:00
+                    </span>
+                    <span style="color: var(--accento); font-weight: 900; font-size: 1.2rem; margin-left: 5px;">
+                        • ${Math.round(hP)} W
+                    </span>
+                </div>
+                <div style="color: #94a3b8; font-size: 0.75rem; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 800;">
+                    Radiazione: <span style="color: #fbbf24;">${Math.round(hRadiation)} W/m²</span>
+                </div>
+            </div>
+        `;
+
+        // Facciamo ripartire il conteggio di 4 secondi da zero
+        chartSelectionTimer = setTimeout(() => {
+            detail.innerHTML = '';
+            chartSelectionTimer = null; // Reset della variabile
+        }, 4000);
+    }
+};
 
         chart.appendChild(bar);
     }
