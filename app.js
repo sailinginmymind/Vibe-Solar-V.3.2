@@ -425,6 +425,10 @@ for (let h = startH; h <= endH; h++) {
                         </div>
                     </div>
                 `;
+                // 3. Facciamo sparire il contenuto dopo 4 secondi (4000ms)
+                chartSelectionTimer = setTimeout(() => {
+                detail.innerHTML = ''; 
+                }, 4000);
             }
         };
 
