@@ -406,41 +406,43 @@ for (let h = startH; h <= endH; h++) {
             bar.style.boxShadow  = '0 0 12px var(--accento)';
         }
 
-        // 4. Gestore del Click (Quello che volevi tu)
-    // 4. Gestore del Click con Reset del Timer
-bar.onclick = () => {
-    const detail = document.getElementById('detail-display');
-    if (detail) {
-        // --- QUESTA È LA PARTE CRUCIALE ---
-        // Se c'è un timer già attivo (da un click precedente), lo annulliamo subito
-        if (chartSelectionTimer) {
-            clearTimeout(chartSelectionTimer);
-        }
+ // 4. Gestore Anteprima (Hover per PC, Click per Mobile) con Reset Timer
+        const mostraDettaglioBarra = () => {
+            const detail = document.getElementById('detail-display');
+            if (!detail) return;
 
-        // Mostriamo i nuovi dati
-        detail.innerHTML = `
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2;">
-                <div style="margin-bottom: 2px;">
-                    <span style="color: #fbbf24; font-weight: 900; font-size: 1.2rem; text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);">
-                        ORE ${h}:00
-                    </span>
-                    <span style="color: var(--accento); font-weight: 900; font-size: 1.2rem; margin-left: 5px;">
-                        • ${Math.round(hP)} W
-                    </span>
-                </div>
-                <div style="color: #94a3b8; font-size: 0.75rem; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 800;">
-                    Radiazione: <span style="color: #fbbf24;">${Math.round(hRadiation)} W/m²</span>
-                </div>
-            </div>
-        `;
+            // Se c'è un timer già attivo (da un'altra barra), lo annulliamo subito
+            if (chartSelectionTimer) {
+                clearTimeout(chartSelectionTimer);
+            }
 
-        // Facciamo ripartire il conteggio di 4 secondi da zero
-        chartSelectionTimer = setTimeout(() => {
-            detail.innerHTML = '';
-            chartSelectionTimer = null; // Reset della variabile
-        }, 4000);
-    }
-};
+            // Mostriamo i dati della barra corrente
+            detail.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2;">
+                    <div style="margin-bottom: 2px;">
+                        <span style="color: #fbbf24; font-weight: 900; font-size: 1.2rem; text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);">
+                            ORE ${h}:00
+                        </span>
+                        <span style="color: var(--accento); font-weight: 900; font-size: 1.2rem; margin-left: 5px;">
+                            • ${Math.round(hP)} W
+                        </span>
+                    </div>
+                    <div style="color: #94a3b8; font-size: 0.75rem; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 800;">
+                        Radiazione: <span style="color: #fbbf24;">${Math.round(hRadiation)} W/m²</span>
+                    </div>
+                </div>
+            `;
+
+            // Il dettaglio sparisce dopo 4 secondi dall'ultima azione (click o hover)
+            chartSelectionTimer = setTimeout(() => {
+                detail.innerHTML = '';
+                chartSelectionTimer = null;
+            }, 4000);
+        };
+
+        // Assegniamo la stessa logica a entrambi gli eventi
+        bar.onclick = mostraDettaglioBarra;      // Per Mobile (Tap)
+        bar.onmouseenter = mostraDettaglioBarra; // Per PC (Passaggio mouse)
 
         chart.appendChild(bar);
     }
