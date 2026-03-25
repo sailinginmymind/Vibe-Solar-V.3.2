@@ -10,6 +10,7 @@
 let chartSelectionTimer;
 let dataSelezionata = new Date();
 let isGpsSyncing = false;
+let showRadiation = false;
 
 let state = {
     isWh:        false,
@@ -72,7 +73,16 @@ function initEventListeners() {
             aggiornaTuttaInterfaccia(true);
         });
     }
-
+    // Gestore per switchare tra % Nubi e Radiazione W/m2
+    const cloudDisplay = document.querySelector('.core-display');
+    if (cloudDisplay) {
+        cloudDisplay.style.cursor = 'pointer'; // Fa capire che è cliccabile
+        cloudDisplay.onclick = () => {
+            showRadiation = !showRadiation;
+            updateAll(true); // Riesegue l'aggiornamento della UI per cambiare il testo
+        };
+    }
+    
     const cityInput = document.getElementById('city-input');
     if (cityInput) {
         cityInput.addEventListener('change', function () {
@@ -276,14 +286,25 @@ async function updateAll(isManualTime = false) {
         const hourly = state.weatherData.hourly;
         const daily  = state.weatherData.daily;
 
-        // Recupero dei dati necessari: nuvole (per la UI) e radiazione (per il calcolo)
         const cloudCover = hourly.cloud_cover ? (hourly.cloud_cover[hourIdx] ?? 0) : 0;
         const radiation  = hourly.shortwave_radiation ? (hourly.shortwave_radiation[hourIdx] ?? 0) : 0;
 
         document.getElementById('r-wind').innerText          = Math.round(hourly.wind_speed_10m[hourIdx]) + ' km/h';
         document.getElementById('r-hum').innerText           = hourly.relative_humidity_2m[hourIdx] + '%';
         document.getElementById('r-temp').innerText          = Math.round(hourly.temperature_2m[hourIdx]) + '°C';
-        document.getElementById('r-cloud-percent').innerText = cloudCover + '%';
+        
+        // --- LOGICA DI VISUALIZZAZIONE DINAMICA ---
+        const cloudValueEl = document.getElementById('r-cloud-percent');
+        const cloudLabelEl = cloudValueEl.nextElementSibling; // Seleziona lo span con classe "sub-label"
+        
+        if (showRadiation) {
+            cloudValueEl.innerText = Math.round(radiation) + ' W/m²';
+            if (cloudLabelEl) cloudLabelEl.innerText = 'RADIAZIONE';
+        } else {
+            cloudValueEl.innerText = cloudCover + '%';
+            if (cloudLabelEl) cloudLabelEl.innerText = 'NUBI';
+        }
+        // ------------------------------------------
 
         const sunrise = daily.sunrise[0].split('T')[1].substring(0, 5);
         const sunset  = daily.sunset[0].split('T')[1].substring(0, 5);
@@ -297,7 +318,6 @@ async function updateAll(isManualTime = false) {
         const progress    = (hDec - sunH) / (setH - sunH);
         const sunAltitude = (hDec >= sunH && hDec <= setH) ? Math.sin(progress * Math.PI) * 65 : 0;
 
-        // Cambiato qui: ora usa calculatePowerByRadiation passando il dato della radiazione reale
         const pServ = SolarEngine.calculatePowerByRadiation(state.panelWp,   radiation, state.panelTilt, sunAltitude);
         const pPS   = SolarEngine.calculatePowerByRadiation(state.panelPsWp, radiation, state.panelTilt, sunAltitude);
 
@@ -314,7 +334,6 @@ async function updateAll(isManualTime = false) {
         console.error("Errore:", e);
     }
 }
-
 /* =========================================================
    5. SEZIONE REPORT
    ========================================================= */
