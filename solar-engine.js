@@ -79,19 +79,27 @@ const SolarEngine = {
      * @param {number} sunAltitude - Altezza del sole attuale (0-90)
      * @returns {number} Watt prodotti (es. 85.5)
      */
-    calculatePowerByRadiation(panelWp, radiation, tilt = 0, sunAltitude = 0) {
+   /**
+     * Calcola la potenza basandosi sulla radiazione solare reale (W/m²).
+     * AGGIORNATO: Aggiunto controllo orario alba/tramonto per evitare valori notturni.
+     */
+    calculatePowerByRadiation(hDec, sunH, setH, panelWp, radiation, tilt = 0, sunAltitude = 0) {
+        // 1. Controllo Notte: se siamo fuori dalla finestra luce, forza 0W
+        if (hDec < sunH || hDec > setH) return 0;
+
+        // 2. Controllo sicurezza su radiazione e altezza sole
         if (!radiation || radiation <= 0 || sunAltitude <= 0) return 0;
 
-        // 1. Il pannello eroga il Wp a 1000 W/m² (Standard Test Conditions)
+        // 3. Il pannello eroga il Wp a 1000 W/m²
         const basePower = panelWp * (radiation / 1000);
 
-        // 2. Fattore di incidenza: differenza tra tilt reale e quello ottimale
+        // 4. Fattore di incidenza
         const optimalTilt = this.getOptimalTilt(sunAltitude);
         const angularDiff = Math.abs(tilt - optimalTilt);
         const radDiff = (angularDiff * Math.PI) / 180;
         const incidenceFactor = Math.max(0, Math.cos(radDiff));
 
-        // 3. Efficienza di sistema (cavi, calore, MPPT) - Usiamo lo 0.82 come nel tuo calcolo originale
+        // 5. Efficienza di sistema (0.82)
         const systemEfficiency = 0.82;
 
         const finalPower = basePower * incidenceFactor * systemEfficiency;
