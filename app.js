@@ -101,119 +101,121 @@ function initEventListeners() {
 }
 
 function initSliders() {
-    // Slider SOC
-    [
-        { id: 'soc-slider',    valId: 'soc-val',    stateKey: 'currentSOC'   },
-        { id: 'ps-soc-slider', valId: 'ps-soc-val', stateKey: 'currentPsSOC' },
-    ].forEach(s => {
-        const el = document.getElementById(s.id);
-        if (!el) return;
-        el.style.setProperty('--value', el.value + '%');
-        el.addEventListener('input', (e) => {
-            state[s.stateKey] = e.target.value;
-            document.getElementById(s.valId).innerText = e.target.value + '%';
-            el.style.setProperty('--value', e.target.value + '%');
-            updateAll();
-        });
-    });
+    // Slider SOC
+    [
+        { id: 'soc-slider',    valId: 'soc-val',    stateKey: 'currentSOC'   },
+        { id: 'ps-soc-slider', valId: 'ps-soc-val', stateKey: 'currentPsSOC' },
+    ].forEach(s => {
+        const el = document.getElementById(s.id);
+        if (!el) return;
+        el.style.setProperty('--value', el.value + '%');
+        el.addEventListener('input', (e) => {
+            state[s.stateKey] = e.target.value;
+            document.getElementById(s.valId).innerText = e.target.value + '%';
+            el.style.setProperty('--value', e.target.value + '%');
+            updateAll();
+        });
+    });
 
-    // Slider Tilt Manuale
-    const tiltSlider  = document.getElementById('tilt-slider');
-    const tiltDisplay = document.getElementById('tilt-val');
+    // Slider Tilt Manuale
+    const tiltSlider  = document.getElementById('tilt-slider');
+    const tiltDisplay = document.getElementById('tilt-val');
 
-    if (tiltSlider) {
-        tiltSlider.value = state.panelTilt || 0;
-        if (tiltDisplay) tiltDisplay.innerText = state.panelTilt || 0;
+    if (tiltSlider) {
+        tiltSlider.value = state.panelTilt || 0;
+        if (tiltDisplay) tiltDisplay.innerText = state.panelTilt || 0;
         tiltSlider.style.setProperty('--value', (tiltSlider.value / 90 * 100) + '%');
-        tiltSlider.addEventListener('input', (e) => {
-            const val = e.target.value;
-            if (tiltDisplay) tiltDisplay.innerText = val;
+        tiltSlider.addEventListener('input', (e) => {
+            const val = e.target.value;
+            if (tiltDisplay) tiltDisplay.innerText = val;
             e.target.style.setProperty('--value', (val / 90 * 100) + '%');
-            state.panelTilt = parseInt(val);
-            localStorage.setItem('vibe_panel_tilt', val);
-            updateAll();
-        });
-    }
+            state.panelTilt = parseInt(val);
+            localStorage.setItem('vibe_panel_tilt', val);
+            updateAll();
+        });
+    }
 
-    // Pulsante AUTO-TILT con LOGICA NOTTE
-    const btnAuto    = document.getElementById('btn-auto-tilt');
-    const hintBox    = document.getElementById('tilt-hint');
-    const optimumVal = document.getElementById('optimum-tilt-val');
+    // Pulsante AUTO-TILT con LOGICA NOTTE
+    const btnAuto    = document.getElementById('btn-auto-tilt');
+    const hintBox    = document.getElementById('tilt-hint');
+    const optimumVal = document.getElementById('optimum-tilt-val');
 
-    if (btnAuto) {
-        btnAuto.addEventListener('click', () => {
-            const timeInput = document.getElementById('input-time');
-            if (!timeInput || !timeInput.value) return;
+    if (btnAuto) {
+        btnAuto.addEventListener('click', () => {
+            const timeInput = document.getElementById('input-time');
+            if (!timeInput || !timeInput.value) return;
 
-            const [h, m] = timeInput.value.split(':').map(Number);
-            const hDec = h + (m / 60);
+            const [h, m] = timeInput.value.split(':').map(Number);
+            const hDec = h + (m / 60);
 
-            const sunriseTxt = document.getElementById('sunrise-txt').innerText;
-            const sunsetTxt  = document.getElementById('sunset-txt').innerText;
-            if (sunriseTxt === '--:--' || sunsetTxt === '--:--') return;
+            const sunriseTxt = document.getElementById('sunrise-txt').innerText;
+            const sunsetTxt  = document.getElementById('sunset-txt').innerText;
+            if (sunriseTxt === '--:--' || sunsetTxt === '--:--') return;
 
-            const sunrise = SolarEngine.timeToDecimal(sunriseTxt);
-            const sunset  = SolarEngine.timeToDecimal(sunsetTxt);
+            const sunrise = SolarEngine.timeToDecimal(sunriseTxt);
+            const sunset  = SolarEngine.timeToDecimal(sunsetTxt);
 
-            // CONTROLLO NOTTE
-            if (hDec < sunrise || hDec > sunset) {
-                btnAuto.innerText = 'IL SOLE STA DORMENDO... 🌙';
-                setTimeout(() => { btnAuto.innerText = 'AUTO ✨'; }, 2000);
-                return; 
-            }
+            // CONTROLLO NOTTE
+            if (hDec < sunrise || hDec > sunset) {
+                btnAuto.innerText = 'IL SOLE STA DORMENDO... 🌙';
+                setTimeout(() => { btnAuto.innerText = 'AUTO ✨'; }, 2000);
+                return; 
+            }
 
-            const progress = (hDec - sunrise) / (sunset - sunrise);
-            const sunAlt = Math.sin(progress * Math.PI) * 65;
+            const progress = (hDec - sunrise) / (sunset - sunrise);
+            const sunAlt = Math.sin(progress * Math.PI) * 65;
 
-            let idealTilt = Math.max(0, Math.min(90, 90 - sunAlt));
-            idealTilt = Math.round(idealTilt / 5) * 5;
+            let idealTilt = Math.max(0, Math.min(90, 90 - sunAlt));
+            idealTilt = Math.round(idealTilt / 5) * 5;
 
-            tiltSlider.value = idealTilt;
-            if (tiltDisplay) tiltDisplay.innerText = idealTilt;
+            tiltSlider.value = idealTilt;
+            if (tiltDisplay) tiltDisplay.innerText = idealTilt;
             tiltSlider.style.setProperty('--value', (idealTilt / 90 * 100) + '%');
-            state.panelTilt = idealTilt;
-            localStorage.setItem('vibe_panel_tilt', idealTilt);
+            state.panelTilt = idealTilt;
+            localStorage.setItem('vibe_panel_tilt', idealTilt);
 
-            if (hintBox)    hintBox.style.display = 'block';
-            if (optimumVal) optimumVal.innerText = idealTilt;
+            if (hintBox)    hintBox.style.display = 'block';
+            if (optimumVal) optimumVal.innerText = idealTilt;
 
-            btnAuto.innerText = 'INCLINAZIONE OTTIMALE! ✅';
+            btnAuto.innerText = 'INCLINAZIONE OTTIMALE! ✅';
             setTimeout(() => { btnAuto.innerText = 'AUTO ✨'; }, 1500);
             updateAll();
         });
     }
-            // Pulsante RESET TILT (Porta a 0°)
-const btnReset = document.getElementById('btn-reset-tilt');
-if (btnReset) {
-    btnReset.addEventListener('click', () => {
-        const tiltSlider = document.getElementById('tilt-slider');
-        const tiltDisplay = document.getElementById('tilt-val');
 
-        if (tiltSlider) {
-            const resetVal = 0;
-            
-            // 1. Aggiorna lo stato e il valore dello slider
-            tiltSlider.value = resetVal;
-            state.panelTilt = resetVal;
-            localStorage.setItem('vibe_panel_tilt', resetVal);
+    // Pulsante RESET TILT (Porta a 0°)
+    const btnReset = document.getElementById('btn-reset-tilt');
+    if (btnReset) {
+        btnReset.addEventListener('click', () => {
+            const tiltSlider = document.getElementById('tilt-slider');
+            const tiltDisplay = document.getElementById('tilt-val');
 
-            // 2. Aggiorna la UI (Testo e riempimento barra)
-            if (tiltDisplay) tiltDisplay.innerText = resetVal;
-            tiltSlider.style.setProperty('--value', '0%');
+            if (tiltSlider) {
+                const resetVal = 0;
+                
+                // 1. Aggiorna lo stato e il valore dello slider
+                tiltSlider.value = resetVal;
+                state.panelTilt = resetVal;
+                localStorage.setItem('vibe_panel_tilt', resetVal);
 
-            // 3. Nasconde il suggerimento "Inclinazione Ottimale" se era aperto
-            const hintBox = document.getElementById('tilt-hint');
-            if (hintBox) hintBox.style.display = 'none';
+                // 2. Aggiorna la UI (Testo e riempimento barra)
+                if (tiltDisplay) tiltDisplay.innerText = resetVal;
+                tiltSlider.style.setProperty('--value', '0%');
 
-            // 4. Ricalcola tutto
-            updateAll();
+                // 3. Nasconde il suggerimento "Inclinazione Ottimale" se era aperto
+                const hintBox = document.getElementById('tilt-hint');
+                if (hintBox) hintBox.style.display = 'none';
 
-            // Feedback visivo sul tasto
-            btnReset.innerText = 'RESETTATO! ✅';
-            setTimeout(() => { btnReset.innerText = '0° 📐'; }, 1000);
-        }; // Questo chiude l'addEventListener del Reset
-    } // Questo chiude l'if (btnReset)
-}
+                // 4. Ricalcola tutto
+                updateAll();
+
+                // Feedback visivo sul tasto
+                btnReset.innerText = 'RESETTATO! ✅';
+                setTimeout(() => { btnReset.innerText = '0° 📐'; }, 1000);
+            }
+        }); 
+    }
+} // <--- Questa chiude correttamente la funzione initSliders()
 /* =========================================================
    3. LOGICA GPS E COORDINATE
    ========================================================= */
