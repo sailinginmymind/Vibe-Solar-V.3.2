@@ -250,66 +250,69 @@ async function searchCityCoords(cityName) {
    ========================================================= */
 
 async function updateAll(isManualTime = false) {
-    const lat        = document.getElementById('input-lat').value;
-    const lng        = document.getElementById('input-lng').value;
-    const timeInput = document.getElementById('input-time');
+    const lat        = document.getElementById('input-lat').value;
+    const lng        = document.getElementById('input-lng').value;
+    const timeInput = document.getElementById('input-time');
 
-    if (!lat || !lng) return;
-    if (!isGpsSyncing) updateCityName(lat, lng);
+    if (!lat || !lng) return;
+    if (!isGpsSyncing) updateCityName(lat, lng);
 
-    if (timeInput && !timeInput.value) {
-        const now = new Date();
-        timeInput.value = now.getHours().toString().padStart(2, '0') + ':' +
-                          now.getMinutes().toString().padStart(2, '0');
-    }
+    if (timeInput && !timeInput.value) {
+        const now = new Date();
+        timeInput.value = now.getHours().toString().padStart(2, '0') + ':' +
+                          now.getMinutes().toString().padStart(2, '0');
+    }
 
-    try {
-        const dateStr = dataSelezionata.toISOString().split('T')[0];
-        state.weatherData = await WeatherAPI.fetchForecast(lat, lng, dateStr, !isManualTime);
+    try {
+        const dateStr = dataSelezionata.toISOString().split('T')[0];
+        state.weatherData = await WeatherAPI.fetchForecast(lat, lng, dateStr, !isManualTime);
 
-        if (!state.weatherData || !state.weatherData.hourly) return;
+        if (!state.weatherData || !state.weatherData.hourly) return;
 
-        const [ore, minuti] = timeInput.value.split(':').map(Number);
-        const hourIdx = Math.min(ore, 23);
-        const hDec    = ore + (minuti / 60);
+        const [ore, minuti] = timeInput.value.split(':').map(Number);
+        const hourIdx = Math.min(ore, 23);
+        const hDec    = ore + (minuti / 60);
 
-        const hourly = state.weatherData.hourly;
-        const daily  = state.weatherData.daily;
+        const hourly = state.weatherData.hourly;
+        const daily  = state.weatherData.daily;
 
-        const cloudCover = hourly.cloud_cover ? (hourly.cloud_cover[hourIdx] ?? 0) : 0;
+        // Recupero dei dati necessari: nuvole (per la UI) e radiazione (per il calcolo)
+        const cloudCover = hourly.cloud_cover ? (hourly.cloud_cover[hourIdx] ?? 0) : 0;
+        const radiation  = hourly.shortwave_radiation ? (hourly.shortwave_radiation[hourIdx] ?? 0) : 0;
 
-        document.getElementById('r-wind').innerText          = Math.round(hourly.wind_speed_10m[hourIdx]) + ' km/h';
-        document.getElementById('r-hum').innerText           = hourly.relative_humidity_2m[hourIdx] + '%';
-        document.getElementById('r-temp').innerText          = Math.round(hourly.temperature_2m[hourIdx]) + '°C';
-        document.getElementById('r-cloud-percent').innerText = cloudCover + '%';
+        document.getElementById('r-wind').innerText          = Math.round(hourly.wind_speed_10m[hourIdx]) + ' km/h';
+        document.getElementById('r-hum').innerText           = hourly.relative_humidity_2m[hourIdx] + '%';
+        document.getElementById('r-temp').innerText          = Math.round(hourly.temperature_2m[hourIdx]) + '°C';
+        document.getElementById('r-cloud-percent').innerText = cloudCover + '%';
 
-        const sunrise = daily.sunrise[0].split('T')[1].substring(0, 5);
-        const sunset  = daily.sunset[0].split('T')[1].substring(0, 5);
-        document.getElementById('sunrise-txt').innerText         = sunrise;
-        document.getElementById('sunset-txt').innerText          = sunset;
-        document.getElementById('display-hour-center').innerText = timeInput.value;
+        const sunrise = daily.sunrise[0].split('T')[1].substring(0, 5);
+        const sunset  = daily.sunset[0].split('T')[1].substring(0, 5);
+        document.getElementById('sunrise-txt').innerText         = sunrise;
+        document.getElementById('sunset-txt').innerText          = sunset;
+        document.getElementById('display-hour-center').innerText = timeInput.value;
 
-        const sunH = SolarEngine.timeToDecimal(sunrise);
-        const setH = SolarEngine.timeToDecimal(sunset);
+        const sunH = SolarEngine.timeToDecimal(sunrise);
+        const setH = SolarEngine.timeToDecimal(sunset);
 
-        const progress    = (hDec - sunH) / (setH - sunH);
-        const sunAltitude = (hDec >= sunH && hDec <= setH) ? Math.sin(progress * Math.PI) * 65 : 0;
+        const progress    = (hDec - sunH) / (setH - sunH);
+        const sunAltitude = (hDec >= sunH && hDec <= setH) ? Math.sin(progress * Math.PI) * 65 : 0;
 
-        const pServ = SolarEngine.calculatePower(hDec, sunH, setH, state.panelWp,   cloudCover, state.panelTilt, sunAltitude);
-        const pPS   = SolarEngine.calculatePower(hDec, sunH, setH, state.panelPsWp, cloudCover, state.panelTilt, sunAltitude);
+        // Cambiato qui: ora usa calculatePowerByRadiation passando il dato della radiazione reale
+        const pServ = SolarEngine.calculatePowerByRadiation(state.panelWp,   radiation, state.panelTilt, sunAltitude);
+        const pPS   = SolarEngine.calculatePowerByRadiation(state.panelPsWp, radiation, state.panelTilt, sunAltitude);
 
-        document.getElementById('w_out').innerText = Math.round(pServ + pPS) + ' W';
-        const elServ = document.getElementById('w_services');
-        const elPS   = document.getElementById('w_ps');
-        if (elServ) elServ.innerText = Math.round(pServ) + ' W';
-        if (elPS)   elPS.innerText   = Math.round(pPS)   + ' W';
+        document.getElementById('w_out').innerText = Math.round(pServ + pPS) + ' W';
+        const elServ = document.getElementById('w_services');
+        const elPS   = document.getElementById('w_ps');
+        if (elServ) elServ.innerText = Math.round(pServ) + ' W';
+        if (elPS)   elPS.innerText   = Math.round(pPS)   + ' W';
 
-        updateSunUI(hDec, sunH, setH);
-        updateReportUI(pServ + pPS, sunH, setH);
+        updateSunUI(hDec, sunH, setH);
+        updateReportUI(pServ + pPS, sunH, setH);
 
-    } catch (e) {
-        console.error("Errore:", e);
-    }
+    } catch (e) {
+        console.error("Errore:", e);
+    }
 }
 
 /* =========================================================
@@ -317,68 +320,72 @@ async function updateAll(isManualTime = false) {
    ========================================================= */
 
 function updateReportUI(totalPower, sunH, setH) {
-    const chart = document.getElementById('hourly-chart');
-    const totalDisplay = document.getElementById('total-wh-day');
-    if (!chart || !state.weatherData) return;
+    const chart = document.getElementById('hourly-chart');
+    const totalDisplay = document.getElementById('total-wh-day');
+    if (!chart || !state.weatherData) return;
 
-    const wServ = parseFloat(document.getElementById('w_services')?.innerText) || 0;
-    const wPS   = parseFloat(document.getElementById('w_ps')?.innerText)        || 0;
-    const psAhEquiv = state.psAh / 12.8;
+    const wServ = parseFloat(document.getElementById('w_services')?.innerText) || 0;
+    const wPS   = parseFloat(document.getElementById('w_ps')?.innerText)        || 0;
+    const psAhEquiv = state.psAh / 12.8;
 
-    const safeSet = (id, val) => {
-        const el = document.getElementById(id);
-        if (el) el.innerText = val;
-    };
+    const safeSet = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = val;
+    };
 
-    safeSet('batt_charge_80_txt',  SolarEngine.estimateChargeTime(state.currentSOC,   80,  wServ, state.battAh));
-    safeSet('batt_charge_90_txt',  SolarEngine.estimateChargeTime(state.currentSOC,   90,  wServ, state.battAh));
-    safeSet('batt_charge_100_txt', SolarEngine.estimateChargeTime(state.currentSOC,   100, wServ, state.battAh));
-    safeSet('ps_charge_80_txt',    SolarEngine.estimateChargeTime(state.currentPsSOC, 80,  wPS,   psAhEquiv));
-    safeSet('ps_charge_90_txt',    SolarEngine.estimateChargeTime(state.currentPsSOC, 90,  wPS,   psAhEquiv));
-    safeSet('ps_charge_100_txt',   SolarEngine.estimateChargeTime(state.currentPsSOC, 100, wPS,   psAhEquiv));
+    safeSet('batt_charge_80_txt',  SolarEngine.estimateChargeTime(state.currentSOC,   80,  wServ, state.battAh));
+    safeSet('batt_charge_90_txt',  SolarEngine.estimateChargeTime(state.currentSOC,   90,  wServ, state.battAh));
+    safeSet('batt_charge_100_txt', SolarEngine.estimateChargeTime(state.currentSOC,   100, wServ, state.battAh));
+    safeSet('ps_charge_80_txt',    SolarEngine.estimateChargeTime(state.currentPsSOC, 80,  wPS,   psAhEquiv));
+    safeSet('ps_charge_90_txt',    SolarEngine.estimateChargeTime(state.currentPsSOC, 90,  wPS,   psAhEquiv));
+    safeSet('ps_charge_100_txt',   SolarEngine.estimateChargeTime(state.currentPsSOC, 100, wPS,   psAhEquiv));
 
-    chart.innerHTML = '';
-    let dailyTotal = 0;
-    const startH = Math.floor(sunH);
-    const endH   = Math.ceil(setH);
-    const maxPotenza = (state.panelWp + state.panelPsWp) || 1;
+    chart.innerHTML = '';
+    let dailyTotal = 0;
+    const startH = Math.floor(sunH);
+    const endH   = Math.ceil(setH);
+    const maxPotenza = (state.panelWp + state.panelPsWp) || 1;
 
-    const timeInput  = document.getElementById('input-time');
-    const currentH   = (timeInput && timeInput.value) ? parseInt(timeInput.value.split(':')[0]) : -1;
+    const timeInput  = document.getElementById('input-time');
+    const currentH   = (timeInput && timeInput.value) ? parseInt(timeInput.value.split(':')[0]) : -1;
 
- for (let h = startH; h <= endH; h++) {
-        const hProgress  = (h - sunH) / (setH - sunH);
-        const hAltitude  = Math.max(0, Math.sin(hProgress * Math.PI) * 65);
-        const cloud      = state.weatherData.hourly.cloud_cover[h] || 0;
-        const hP         = SolarEngine.calculatePower(h, sunH, setH, state.panelWp + state.panelPsWp, cloud, state.panelTilt, hAltitude);
-        dailyTotal += hP;
+    for (let h = startH; h <= endH; h++) {
+        const hProgress  = (h - sunH) / (setH - sunH);
+        const hAltitude  = Math.max(0, Math.sin(hProgress * Math.PI) * 65);
+        
+        // 1. Recupero della radiazione specifica per l'ora del ciclo
+        const hRadiation = state.weatherData.hourly.shortwave_radiation ? (state.weatherData.hourly.shortwave_radiation[h] || 0) : 0;
+        
+        // 2. Uso del nuovo metodo basato sulla radiazione reale invece che cloud_cover
+        const hP = SolarEngine.calculatePowerByRadiation(
+            state.panelWp + state.panelPsWp, 
+            hRadiation, 
+            state.panelTilt, 
+            hAltitude
+        );
+        
+        dailyTotal += hP;
 
-        const bar = document.createElement('div');
-        bar.className    = 'bar';
-        bar.style.height = Math.max(5, (hP / maxPotenza * 100)) + '%';
-        
-        // --- EVIDENZIAZIONE SINTONIZZATA COL TEMA ---
-        // Opacità sempre a 1 per tutte le barre come richiesto
-        bar.style.opacity = '1';
+        const bar = document.createElement('div');
+        bar.className    = 'bar';
+        bar.style.height = Math.max(5, (hP / maxPotenza * 100)) + '%';
+        bar.style.opacity = '1';
 
-        if (h === currentH) {
-            // Barra ora attuale: colore del tema + bagliore
-            bar.style.background = 'var(--accento)';
-            bar.style.boxShadow  = '0 0 12px var(--accento)';
-        } else {
-            // Altre barre: mantengono il colore base definito nel CSS (es. rgba(255,255,255,0.3))
-            // Non forziamo un colore fisso qui così rispettano lo stile originale
-            bar.style.background = ''; 
-            bar.style.boxShadow  = 'none';
-        }
+        if (h === currentH) {
+            bar.style.background = 'var(--accento)';
+            bar.style.boxShadow  = '0 0 12px var(--accento)';
+        } else {
+            bar.style.background = ''; 
+            bar.style.boxShadow  = 'none';
+        }
 
-        bar.onclick = () => {
-            const detail = document.getElementById('detail-display');
-            if (detail) {
-                detail.innerHTML = `<span style="color:var(--accento); font-weight:bold;">ORE ${h}:00 → ${Math.round(hP)} W</span>`;
-            }
-        };
-        chart.appendChild(bar);
+        bar.onclick = () => {
+            const detail = document.getElementById('detail-display');
+            if (detail) {
+                detail.innerHTML = `<span style="color:var(--accento); font-weight:bold;">ORE ${h}:00 → ${Math.round(hP)} W</span>`;
+            }
+        };
+        chart.appendChild(bar);
     }
 
     if (totalDisplay) totalDisplay.innerText = Math.round(dailyTotal) + ' Wh';
