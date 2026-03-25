@@ -211,9 +211,8 @@ if (btnReset) {
             // Feedback visivo sul tasto
             btnReset.innerText = 'RESETTATO! ✅';
             setTimeout(() => { btnReset.innerText = '0° 📐'; }, 1000);
-             }
-        });
-    }
+        }); // Questo chiude l'addEventListener del Reset
+    } // Questo chiude l'if (btnReset)
 }
 /* =========================================================
    3. LOGICA GPS E COORDINATE
