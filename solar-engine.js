@@ -70,6 +70,34 @@ const SolarEngine = {
         return Math.max(0, finalPower);
     },
 
+/**
+     * Calcola la potenza basandosi sulla radiazione solare reale (W/m²).
+     * Questo metodo sostituisce il calcolo basato sulla cloudCover per una precisione maggiore.
+     * * @param {number} panelWp - Watt di picco del pannello (es. 100)
+     * @param {number} radiation - Radiazione dall'API (shortwave_radiation in W/m²)
+     * @param {number} tilt - Inclinazione attuale del pannello (0-90)
+     * @param {number} sunAltitude - Altezza del sole attuale (0-90)
+     * @returns {number} Watt prodotti (es. 85.5)
+     */
+    calculatePowerByRadiation(panelWp, radiation, tilt = 0, sunAltitude = 0) {
+        if (!radiation || radiation <= 0 || sunAltitude <= 0) return 0;
+
+        // 1. Il pannello eroga il Wp a 1000 W/m² (Standard Test Conditions)
+        const basePower = panelWp * (radiation / 1000);
+
+        // 2. Fattore di incidenza: differenza tra tilt reale e quello ottimale
+        const optimalTilt = this.getOptimalTilt(sunAltitude);
+        const angularDiff = Math.abs(tilt - optimalTilt);
+        const radDiff = (angularDiff * Math.PI) / 180;
+        const incidenceFactor = Math.max(0, Math.cos(radDiff));
+
+        // 3. Efficienza di sistema (cavi, calore, MPPT) - Usiamo lo 0.82 come nel tuo calcolo originale
+        const systemEfficiency = 0.82;
+
+        const finalPower = basePower * incidenceFactor * systemEfficiency;
+        return Math.max(0, finalPower);
+    },
+    
     /**
      * Stima il tempo necessario per raggiungere un target di SOC con la potenza corrente.
      *
