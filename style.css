@@ -773,7 +773,6 @@ h2 {
     width: 100%;
     height: 8px;
     border-radius: 10px;
-    background: rgba(255, 255, 255, 0.1);
     outline: none;
     margin-bottom: 8px;
     background: linear-gradient(
@@ -810,20 +809,22 @@ h2 {
     margin-bottom: 20px;
 }
 
-/* Contenitore per i pulsanti AUTO e RESET */
-.tilt-actions-container {
-    display: flex;
-    gap: 10px;        /* Spazio tra i due tasti */
+/* --- FIX QUI: CONTENITORE PULSANTI --- */
+.tilt-controls-row {
+    display: flex !important;   /* Forza l'affiancamento */
+    flex-direction: row !important;
+    gap: 10px;
     width: 100%;
+    margin-top: 10px;
 }
 
-/* Stile base condiviso per entrambi i pulsanti */
+/* Stile base pulsanti */
 #btn-auto-tilt, 
 #btn-reset-tilt {
-    padding: 12px 5px; /* Padding verticale coerente */
+    padding: 12px 5px;
     border-radius: 8px;
     font-weight: 900;
-    font-size: 11px;   /* Leggermente ridotto per far stare il testo nel tasto piccolo */
+    font-size: 11px;
     letter-spacing: 1px;
     cursor: pointer;
     transition: all 0.3s;
@@ -831,11 +832,12 @@ h2 {
     display: flex;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box;
 }
 
-/* Rapporto 2/3 per il tasto AUTO (Stile originale) */
+/* AUTO: Rapporto 2/3 */
 #btn-auto-tilt {
-    flex: 2; 
+    flex: 2 !important; 
     background: var(--bg-badge);
     border: 1px solid var(--accento);
     color: var(--accento);
@@ -846,11 +848,11 @@ h2 {
     color: var(--bg-puro);
 }
 
-/* Rapporto 1/3 per il tasto RESET (Stile più discreto) */
+/* RESET: Rapporto 1/3 */
 #btn-reset-tilt {
-    flex: 1;
+    flex: 1 !important;
     background: rgba(255, 255, 255, 0.05);
-    border: 1px solid #475569; /* Colore ardesia come le label */
+    border: 1px solid #475569;
     color: #94a3b8;
 }
 
@@ -866,7 +868,7 @@ h2 {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 6px;
     font-size: 11px;
-    color: #fbbf24; /* Manteniamo il giallo per l'attenzione */
+    color: #fbbf24;
     text-align: center;
     font-style: italic;
     border-left: 2px solid #fbbf24;
