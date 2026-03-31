@@ -66,13 +66,6 @@ body {
     overflow-x: hidden;      /* Blocca lo scroll a destra/sinistra */
     position: relative;
 }
-/* Applica le restrizioni solo su mobile/PWA */
-@media (max-width: 768px) {
-    body {
-        touch-action: pan-y;
-        overscroll-behavior-y: none;
-    }
-}
 
 .app-container {
     width: 100%;
