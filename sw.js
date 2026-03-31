@@ -11,8 +11,8 @@ const ASSETS_TO_CACHE = [
   './solar-engine.js',
   './weather-api.js',
   './manifest.json',
-  './assets/images/icon-192.png',
-  './assets/images/icon-512.png'
+  './Assets/Images/Vibe_Solar_LOGO_192x192.png',
+  './Assets/Images/Vibe_Solar_LOGO_512x512.png'
 ];
 
 // 1. INSTALLAZIONE: Salva i file nella cache
