@@ -651,3 +651,45 @@ function setupStars() {
         container.appendChild(star);
     }
 }
+
+/* =========================================================
+   LOGICA PWA: REGISTRAZIONE E AGGIORNAMENTO
+   ========================================================= */
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').then((reg) => {
+      
+      // Controlla se c'è un aggiornamento in attesa
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            // Se esiste già un vecchio controller, significa che questa è una nuova versione
+            mostraAvvisoAggiornamento();
+          }
+        });
+      });
+
+    }).catch((err) => console.error('Errore SW:', err));
+  });
+}
+
+// Funzione per mostrare un piccolo banner o messaggio
+function mostraAvvisoAggiornamento() {
+  const avviso = document.createElement('div');
+  avviso.style = `
+    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+    background: var(--accento, #38bdf8); color: #000; padding: 12px 20px;
+    border-radius: 50px; font-weight: bold; z-index: 10000; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: pointer;
+    text-align: center; font-size: 0.9rem; border: 2px solid white;
+  `;
+  avviso.innerHTML = "✨ NUOVA VERSIONE DISPONIBILE! <br> <small>TOCCA QUI PER AGGIORNARE</small>";
+  
+  avviso.onclick = () => {
+    window.location.reload(); // Ricarica la pagina per attivare i nuovi file
+  };
+  
+  document.body.appendChild(avviso);
+}
