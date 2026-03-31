@@ -298,6 +298,36 @@ async function searchCityCoords(cityName) {
     } catch (e) {}
 }
 
+function generaStelle() {
+    const container = document.getElementById('stars-container');
+    if (!container) return;
+    
+    container.innerHTML = ''; // Svuota per evitare duplicati
+    
+    for (let i = 0; i < 50; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        
+        // Posizione casuale
+        const x = Math.random() * 100;
+        const y = Math.random() * 100;
+        
+        // Dimensione casuale (1-3px)
+        const size = Math.random() * 2 + 1;
+        
+        // Durata luccichio casuale (già previsto dal tuo CSS con --duration)
+        const duration = Math.random() * 3 + 2;
+
+        star.style.left = `${x}%`;
+        star.style.top = `${y}%`;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        star.style.setProperty('--duration', `${duration}s`); // Serve per l'animazione twinkle
+        
+        container.appendChild(star);
+    }
+}
+
 /* =========================================================
    4. AGGIORNAMENTO PRINCIPALE
    ========================================================= */
@@ -404,7 +434,7 @@ async function updateAll(isManualTime = false) {
     } catch (e) {
         console.error("Errore updateAll:", e);
     }
-} // CHIUSURA FUNZIONE MANCANTE
+}
         
 /* =========================================================
    5. SEZIONE REPORT
@@ -611,22 +641,30 @@ function aggiornaTuttaInterfaccia(isManual = true) {
    ========================================================= */
 
 function updateSunUI(hDec, sunH, setH) {
-    const sun = document.getElementById('sun-body');
-    const sky = document.getElementById('sky-box');
-    if (!sun || !sky) return;
+    const sun = document.getElementById('sun-body');
+    const sky = document.getElementById('sky-box');
+    const stars = document.getElementById('stars-container'); // Prendi il contenitore stelle
+    if (!sun || !sky) return;
 
-    if (hDec < sunH || hDec > setH) {
-        sun.style.display   = 'none';
-        sky.style.background = 'linear-gradient(to bottom, #0f172a, #1e293b)';
-    } else {
-        sun.style.display   = 'block';
-        const progress      = (hDec - sunH) / (setH - sunH);
-        sun.style.left      = `${15 + (progress * 70)}%`;
-        sun.style.bottom    = `${(Math.sin(progress * Math.PI) * 35) + 10}%`;
-        sky.style.background = (progress < 0.2 || progress > 0.8)
-            ? 'linear-gradient(to bottom, #f59e0b, #7c2d12)'
-            : 'linear-gradient(to bottom, #38bdf8, #1d4ed8)';
-    }
+    if (hDec < sunH || hDec > setH) {
+        // --- È NOTTE ---
+        sun.style.display = 'none';
+        sky.style.background = 'linear-gradient(to bottom, #0f172a, #1e293b)';
+        
+        if (stars) stars.style.opacity = '1'; // ACCENDI LE STELLE
+    } else {
+        // --- È GIORNO ---
+        sun.style.display = 'block';
+        const progress = (hDec - sunH) / (setH - sunH);
+        sun.style.left = `${15 + (progress * 70)}%`;
+        sun.style.bottom = `${(Math.sin(progress * Math.PI) * 35) + 10}%`;
+        
+        sky.style.background = (progress < 0.2 || progress > 0.8)
+            ? 'linear-gradient(to bottom, #f59e0b, #7c2d12)'
+            : 'linear-gradient(to bottom, #38bdf8, #1d4ed8)';
+
+        if (stars) stars.style.opacity = '0'; // SPEGNI LE STELLE
+    }
 }
 
 function changeBg(color) {
@@ -773,5 +811,8 @@ function mostraSuggerimentoIos() {
     };
 }
 
-// Avvia il controllo al caricamento della pagina
-window.addEventListener('load', controllaInstallazioneIos);
+// Avvia i controlli e genera le stelle al caricamento della pagina
+window.addEventListener('load', () => {
+    generaStelle();             
+    controllaInstallazioneIos(); 
+});
