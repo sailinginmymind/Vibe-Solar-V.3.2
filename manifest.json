@@ -1,0 +1,22 @@
+{
+  "short_name": "Vibe Solar",
+  "name": "Vibe Solar - Solar Energy Manager",
+  "icons": [
+    {
+      "src": "Assets/Images/Vibe_Solar_LOGO_192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "Assets/Images/Vibe_Solar_LOGO_512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "index.html",
+  "background_color": "#0f172a",
+  "display": "standalone",
+  "scope": "./",
+  "theme_color": "#38bdf8",
+  "description": "Ottimizzazione energia solare per camper e Van Life."
+}
