@@ -39,9 +39,10 @@ const SolarEngine = {
      * @returns {number} Potenza prodotta in Watt (≥ 0)
      */
     calculatePower(hDec, sunH, setH, panelWp, cloudCover, tilt = 0, sunAltitude = null) {
-        // 1. Notte: nessuna produzione
-        if (hDec < sunH || hDec > setH) return 0;
-
+        // 1. Notte: nessuna produzione, ma appena il sole sorge, inizia la produzione energetica
+        if (currentHour < sunriseDec || currentHour > sunsetDec) {
+        return 0;
+    }
         // 2. Altezza solare: usa il valore fornito oppure lo calcola dalla progressione
         let effectiveAltitude = sunAltitude;
         if (effectiveAltitude === null || effectiveAltitude <= 0) {
