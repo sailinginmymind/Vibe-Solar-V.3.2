@@ -215,7 +215,7 @@ function initSliders() {
             }
         }); 
     }
-} // <--- Questa chiude correttamente la funzione initSliders()
+}
 /* =========================================================
    3. LOGICA GPS E COORDINATE
    ========================================================= */
@@ -294,19 +294,16 @@ async function searchCityCoords(cityName) {
    ========================================================= */
 
 async function updateAll(isManualTime = false) {
-    const lat        = document.getElementById('input-lat').value;
-    const lng        = document.getElementById('input-lng').value;
+    const lat = document.getElementById('input-lat').value;
+    const lng = document.getElementById('input-lng').value;
     const timeInput = document.getElementById('input-time');
 
     if (!lat || !lng) return;
 
-    // 1. AGGIORNAMENTO POSIZIONE (Città)
-    // Chiamiamo updateCityName solo se non siamo in fase di sync GPS hardware
     if (!isGpsSyncing && typeof updateCityName === 'function') {
         updateCityName(lat, lng);
     }
 
-    // 2. GESTIONE ORARIO
     if (timeInput && !timeInput.value) {
         const now = new Date();
         timeInput.value = now.getHours().toString().padStart(2, '0') + ':' +
@@ -315,14 +312,13 @@ async function updateAll(isManualTime = false) {
 
     try {
         const dateStr = dataSelezionata.toISOString().split('T')[0];
-        // Recupero dati meteo (inclusa radiazione)
         state.weatherData = await WeatherAPI.fetchForecast(lat, lng, dateStr, !isManualTime);
 
         if (!state.weatherData || !state.weatherData.hourly) return;
 
         const [ore, minuti] = timeInput.value.split(':').map(Number);
         const hourIdx = Math.min(ore, 23);
-        const hDec    = ore + (minuti / 60);
+        const hDec = ore + (minuti / 60);
 
         const hourly = state.weatherData.hourly;
         const daily  = state.weatherData.daily;
@@ -330,24 +326,24 @@ async function updateAll(isManualTime = false) {
         const cloudCover = hourly.cloud_cover ? (hourly.cloud_cover[hourIdx] ?? 0) : 0;
         const radiation  = hourly.shortwave_radiation ? (hourly.shortwave_radiation[hourIdx] ?? 0) : 0;
 
-       // 3. AGGIORNAMENTO UI METEO
-        document.getElementById('r-wind').innerText          = Math.round(hourly.wind_speed_10m[hourIdx]) + ' km/h';
-        document.getElementById('r-hum').innerText           = hourly.relative_humidity_2m[hourIdx] + '%';
-        document.getElementById('r-temp').innerText          = Math.round(hourly.temperature_2m[hourIdx]) + '°C';
+        document.getElementById('r-wind').innerText = Math.round(hourly.wind_speed_10m[hourIdx]) + ' km/h';
+        document.getElementById('r-hum').innerText = hourly.relative_humidity_2m[hourIdx] + '%';
+        document.getElementById('r-temp').innerText = Math.round(hourly.temperature_2m[hourIdx]) + '°C';
         
-        // Switch dinamico Nubi / Radiazione con controllo NOTTE
         const cloudValueEl = document.getElementById('r-cloud-percent');
         const cloudLabelEl = cloudValueEl.nextElementSibling;
         
-        // Calcoliamo i limiti alba/tramonto per azzerare la radiazione
+        // CORREZIONE QUI: Definiamo bene le stringhe
         const sunriseStr = daily.sunrise[0].split('T')[1].substring(0, 5);
         const sunsetStr  = daily.sunset[0].split('T')[1].substring(0, 5);
+        
+        // CORREZIONE QUI: Usiamo le stringhe corrette per il calcolo decimale
         const sH = SolarEngine.timeToDecimal(sunriseStr);
         const eH = SolarEngine.timeToDecimal(sunsetStr);
+        const isAlba = (ore === Math.floor(sH));
 
         if (showRadiation) {
-            // Se l'ora attuale (hDec) è fuori dalla fascia luce, forza a 0
-            const radiationEffettiva = (hDec < sH || hDec > eH) ? 0 : radiation;
+            const radiationEffettiva = (hDec < sH && !isAlba || hDec > eH) ? 0 : radiation;
             cloudValueEl.innerText = Math.round(radiationEffettiva) + ' W/m²';
             if (cloudLabelEl) cloudLabelEl.innerText = 'RADIAZIONE';
         } else {
@@ -355,21 +351,18 @@ async function updateAll(isManualTime = false) {
             if (cloudLabelEl) cloudLabelEl.innerText = 'NUBI';
         }
 
-        const sunrise = daily.sunrise[0].split('T')[1].substring(0, 5);
-        const sunset  = daily.sunset[0].split('T')[1].substring(0, 5);
-        document.getElementById('sunrise-txt').innerText         = sunrise;
-        document.getElementById('sunset-txt').innerText          = sunset;
-        document.getElementById('display-hour-center').innerText = timeInput.value;
-
-        const sunH = SolarEngine.timeToDecimal(sunrise);
-        const setH = SolarEngine.timeToDecimal(sunset);
-
-        const progress    = (hDec - sunH) / (setH - sunH);
+        const sunH = sH;
+        const setH = eH;
+        const progress = (hDec - sunH) / (setH - sunH);
         const sunAltitude = (hDec >= sunH && hDec <= setH) ? Math.sin(progress * Math.PI) * 65 : 0;
 
-        // 4. CALCOLO POTENZA (Precisione Fisica)
-        const pServ = SolarEngine.calculatePowerByRadiation(hDec, sunH, setH, state.panelWp, radiation, state.panelTilt, sunAltitude);
-        const pPS   = SolarEngine.calculatePowerByRadiation(hDec, sunH, setH, state.panelPsWp, radiation, state.panelTilt, sunAltitude);
+        let radPerCalcolo = radiation;
+        if ((hDec >= sunH || isAlba) && hDec <= setH && radPerCalcolo <= 0) {
+            radPerCalcolo = 15; 
+        }
+
+        const pServ = SolarEngine.calculatePowerByRadiation(hDec, sunH, setH, state.panelWp, radPerCalcolo, state.panelTilt, sunAltitude);
+        const pPS   = SolarEngine.calculatePowerByRadiation(hDec, sunH, setH, state.panelPsWp, radPerCalcolo, state.panelTilt, sunAltitude);
 
         document.getElementById('w_out').innerText = Math.round(pServ + pPS) + ' W';
         const elServ = document.getElementById('w_services');
@@ -377,13 +370,19 @@ async function updateAll(isManualTime = false) {
         if (elServ) elServ.innerText = Math.round(pServ) + ' W';
         if (elPS)   elPS.innerText   = Math.round(pPS)   + ' W';
 
+        // CORREZIONE QUI: Usiamo sunriseStr e sunsetStr
+        document.getElementById('sunrise-txt').innerText = sunriseStr;
+        document.getElementById('sunset-txt').innerText  = sunsetStr;
+        document.getElementById('display-hour-center').innerText = timeInput.value;
+
         updateSunUI(hDec, sunH, setH);
         updateReportUI(pServ + pPS, sunH, setH);
 
     } catch (e) {
-        console.error("Errore:", e);
+        console.error("Errore updateAll:", e);
     }
-}
+} // CHIUSURA FUNZIONE MANCANTE
+        
 /* =========================================================
    5. SEZIONE REPORT
    ========================================================= */
