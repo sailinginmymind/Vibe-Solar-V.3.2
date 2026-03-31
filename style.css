@@ -46,6 +46,12 @@ body.tema-grigio {
     -webkit-tap-highlight-color: transparent;
 }
 
+html {
+    width: 100%;
+    overflow-x: hidden;
+    height: 100%;
+}
+
 body {
     margin: 0;
     background-color: var(--bg-puro);
@@ -56,6 +62,11 @@ body {
     min-height: 100vh;
     padding-bottom: 140px;
     transition: background-color 0.4s ease;
+    width: 100%;
+    overflow-x: hidden;      /* Blocca lo scroll a destra/sinistra */
+    position: relative;
+    touch-action: pan-y;     /* Permette solo lo scroll verticale */
+    overscroll-behavior-y: none; /* Impedisce il rimbalzo elastico in alto/basso */
 }
 
 .app-container {
