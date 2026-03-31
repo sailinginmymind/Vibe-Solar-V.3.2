@@ -1080,8 +1080,8 @@ h2 {
     background: var(--bg-badge) !important;
     backdrop-filter: blur(12px) saturate(160%);
     display: flex;
-    justify-content: space-around;
-    padding: 10px 15px env(safe-area-inset-bottom);
+    align-items: center;
+    padding: 0 15px;
     border-radius: 20px;
     border: 1px solid var(--accento) !important;
     z-index: 1000;
