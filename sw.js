@@ -2,7 +2,7 @@
    SERVICE WORKER - Vibe Solar v3.2
    ========================================================= */
 
-const CACHE_NAME = 'Vibe_Solar_v3.2.8'; // Incrementa v1, v2, v3 per forzare gli aggiornamenti
+const CACHE_NAME = 'Vibe_Solar_v3.2.9'; // Incrementa v1, v2, v3 per forzare gli aggiornamenti
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -11,8 +11,8 @@ const ASSETS_TO_CACHE = [
   './solar-engine.js',
   './weather-api.js',
   './manifest.json',
-  './Assets/Images/Vibe_Solar_LOGO_192x192.png',
-  './Assets/Images/Vibe_Solar_LOGO_512x512.png'
+  './Assets/Images/LOGO192x192(1).png',
+  './Assets/Images/LOGO512x512(1).png'
 ];
 
 // 1. INSTALLAZIONE: Salva i file nella cache
