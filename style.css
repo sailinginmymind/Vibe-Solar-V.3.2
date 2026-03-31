@@ -134,6 +134,17 @@ body {
     to { opacity: 1; transform: translate(-50%, 0); }
 }
 
+@keyframes slideUpCenter {
+    from { 
+        opacity: 0; 
+        transform: translate(-50%, -40%); /* Parte poco più in basso del centro */
+    }
+    to { 
+        opacity: 1; 
+        transform: translate(-50%, -50%); /* Arriva al centro perfetto */
+    }
+}
+
 
 /* -----------------------------------------------------------------
    4. TIPOGRAFIA & TITOLI
