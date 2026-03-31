@@ -717,9 +717,8 @@ function mostraAvvisoAggiornamento() {
   `;
 
   avviso.innerHTML = `
-    <div style="font-size: 40px; margin-bottom: 15px;">✨</div>
-    <div style="font-size: 18px; color: var(--accento); margin-bottom: 10px;">Nuovo Aggiornamento</div>
-    <div style="font-size: 12px; opacity: 0.9; font-weight: 400;">
+    <div style="font-size: 18px; color: var(--accento); margin-bottom: 10px;">✨Nuovo Aggiornamento✨</div>
+    <div style="font-size: 12px; opacity: 1; font-weight: 400;">
       Abbiamo migliorato Vibe Solar.<br>Tocca qui per ricaricare l'app.
     </div>
   `;
