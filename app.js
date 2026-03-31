@@ -709,7 +709,7 @@ function mostraAvvisoAggiornamento() {
     border: 2px solid white;
     line-height: 1.4;
     text-transform: uppercase;
-    animation: fadeInAggiornamento 0.5s ease-out;
+    animation: slideUp 0.5s ease-out;
   `;
 
   // Messaggio più chiaro e centrato
