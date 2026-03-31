@@ -3,13 +3,13 @@
   "name": "Vibe Solar 3.2",
   "icons": [
     {
-      "src": "Assets/Images/LOGO192x192.png",
+      "src": "Assets/Images/LOGO192x192(1).png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any"
     },
     {
-      "src": "Assets/Images/LOGO512x512.png",
+      "src": "Assets/Images/LOGO512x512(1).png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "maskable"
