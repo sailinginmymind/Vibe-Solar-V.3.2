@@ -221,48 +221,57 @@ function initSliders() {
    ========================================================= */
 
 async function handleGpsSync() {
-    isGpsSyncing = true;
-    const btn       = document.getElementById('btn-gps');
-    const timeInput = document.getElementById('input-time');
-    const dateInput = document.getElementById('input-date');
-    const latInput  = document.getElementById('input-lat');
-    const lngInput  = document.getElementById('input-lng');
+    isGpsSyncing = true;
+    const btn        = document.getElementById('btn-gps');
+    const timeInput = document.getElementById('input-time');
+    const dateInput = document.getElementById('input-date');
+    const latInput  = document.getElementById('input-lat');
+    const lngInput  = document.getElementById('input-lng');
 
-    if (!btn) return;
-    btn.disabled  = true;
-    btn.innerText = '🛰️ RICERCA POSIZIONE...';
+    if (!btn) return;
+    btn.disabled  = true;
+    btn.innerText = '🛰️ RICERCA POSIZIONE...';
 
-    try {
-        const coords = await WeatherAPI.getUserLocation();
-        const now    = new Date();
+    try {
+        const coords = await WeatherAPI.getUserLocation();
+        const now    = new Date();
 
-        if (latInput) latInput.value = coords.latitude.toFixed(4);
-        if (lngInput) lngInput.value = coords.longitude.toFixed(4);
+        if (latInput) latInput.value = coords.latitude.toFixed(4);
+        if (lngInput) lngInput.value = coords.longitude.toFixed(4);
 
-        const oraStringa = now.getHours().toString().padStart(2, '0') + ':' +
-                           now.getMinutes().toString().padStart(2, '0');
-        if (timeInput) timeInput.value = oraStringa;
+        const oraStringa = now.getHours().toString().padStart(2, '0') + ':' +
+                           now.getMinutes().toString().padStart(2, '0');
+        if (timeInput) timeInput.value = oraStringa;
 
-        dataSelezionata = new Date();
-        if (dateInput) dateInput.value = dataSelezionata.toISOString().split('T')[0];
+        dataSelezionata = new Date();
+        if (dateInput) dateInput.value = dataSelezionata.toISOString().split('T')[0];
 
-        await updateCityName(coords.latitude, coords.longitude);
+        await updateCityName(coords.latitude, coords.longitude);
 
-        generaBottoniGiorni();
-        updateAll(false);
+        generaBottoniGiorni();
+        updateAll(false);
 
-        btn.innerText      = '✅ SINCRONIZZAZIONE RIUSCITA';
-        btn.style.background = '#22c55e';
-    } catch (err) {
-        btn.innerText = '❌ ERRORE GPS';
-    } finally {
-        btn.disabled = false;
-        isGpsSyncing = false;
-        setTimeout(() => {
-            btn.innerText      = '📡 AGGIORNA GPS E ORA ATTUALE';
-            btn.style.background = '';
-        }, 2000);
-    }
+        btn.innerText      = '✅ SINCRONIZZAZIONE RIUSCITA';
+        btn.style.background = '#22c55e';
+        
+        // --- AGGIUNTA EFFETTO GLOW ---
+        btn.classList.add('glow-active');
+        // -----------------------------
+        
+    } catch (err) {
+        btn.innerText = '❌ ERRORE GPS';
+    } finally {
+        btn.disabled = false;
+        isGpsSyncing = false;
+        setTimeout(() => {
+            btn.innerText      = '📡 AGGIORNA GPS E ORA ATTUALE';
+            btn.style.background = '';
+            
+            // --- RIMOZIONE EFFETTO GLOW ---
+            btn.classList.remove('glow-active');
+            // ------------------------------
+        }, 2000);
+    }
 }
 
 async function updateCityName(lat, lng) {
