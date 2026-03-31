@@ -697,7 +697,7 @@ function mostraAvvisoAggiornamento() {
     width: 85%;             /* Un po' più stretto per sembrare un popup */
     max-width: 350px; 
     
-    background: var(--bg-badge, #1e293b); /* Usiamo il colore scuro del tuo tema */
+    background: #0f172a;
     color: white; 
     padding: 30px 20px;
     border-radius: 24px;
@@ -705,12 +705,13 @@ function mostraAvvisoAggiornamento() {
     
     font-weight: 900;
     z-index: 10001;         /* Sopra a tutto */
-    box-shadow: 0 20px 50px rgba(0,0,0,0.8); 
+    box-shadow: 0 20px 60px rgba(0,0,0,1);
     
     cursor: pointer;
     text-align: center; 
     line-height: 1.5;
     text-transform: uppercase;
+    opacity: 1 !important;
     
     /* Usiamo l'animazione slideUp che hai già */
     animation: slideUpCenter 0.4s ease-out forwards;
