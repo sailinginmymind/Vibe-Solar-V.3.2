@@ -702,3 +702,48 @@ function mostraAvvisoAggiornamento() {
   
   document.body.appendChild(avviso);
 }
+
+/* =========================================================
+   RILEVAMENTO INSTALLAZIONE iOS (SAFARI)
+   ========================================================= */
+
+function controllaInstallazioneIos() {
+    // 1. Verifica se il dispositivo è un prodotto Apple (iPhone/iPad/iPod)
+    const isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+    
+    // 2. Verifica se l'app è già stata "aggiunta alla Home" (Standalone)
+    const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
+
+    // Se è un iPhone e NON è installata, mostra un suggerimento
+    if (isIos && !isInStandaloneMode()) {
+        mostraSuggerimentoIos();
+    }
+}
+
+function mostraSuggerimentoIos() {
+    const iosPrompt = document.createElement('div');
+    iosPrompt.style = `
+        position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+        background: rgba(30, 41, 59, 0.95); color: white; padding: 15px 25px;
+        border-radius: 20px; z-index: 9999; width: 90%; max-width: 350px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #38bdf8;
+        text-align: center; font-size: 0.9rem; line-height: 1.4;
+    `;
+    
+    iosPrompt.innerHTML = `
+        <div style="font-weight: bold; margin-bottom: 5px;">📲 INSTALLA VIBE SOLAR</div>
+        Tocca l'icona <img src="https://upload.wikimedia.org/wikipedia/commons/d/d5/Ios_share_icon.png" style="height:18px; vertical-align:middle;"> 
+        nella barra di Safari e seleziona <b>"Aggiungi alla schermata Home"</b>.
+        <button id="close-ios-prompt" style="background:none; border:none; color:#38bdf8; display:block; margin: 10px auto 0; font-weight:bold; cursor:pointer;">CHIUDI</button>
+    `;
+
+    document.body.appendChild(iosPrompt);
+
+    // Chiude il messaggio al click
+    document.getElementById('close-ios-prompt').onclick = () => {
+        iosPrompt.style.display = 'none';
+    };
+}
+
+// Avvia il controllo al caricamento della pagina
+window.addEventListener('load', controllaInstallazioneIos);
