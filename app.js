@@ -323,8 +323,24 @@ async function updateAll(isManualTime = false) {
         const hourly = state.weatherData.hourly;
         const daily  = state.weatherData.daily;
 
-        const cloudCover = hourly.cloud_cover ? (hourly.cloud_cover[hourIdx] ?? 0) : 0;
-        const radiation  = hourly.shortwave_radiation ? (hourly.shortwave_radiation[hourIdx] ?? 0) : 0;
+      // --- INIZIO NUOVA LOGICA INTERPOLATA ---
+        const radArray = hourly.shortwave_radiation;
+        let radiation = 0;
+        if (radArray) {
+            const valAttuale = radArray[hourIdx] ?? 0;
+            const valSuccessivo = radArray[Math.min(hourIdx + 1, 23)] ?? valAttuale;
+            const frazioneOra = minuti / 60; 
+            radiation = valAttuale + (valSuccessivo - valAttuale) * frazioneOra;
+        }
+
+        const cloudArray = hourly.cloud_cover;
+        let cloudCover = 0;
+        if (cloudArray) {
+            const cAttuale = cloudArray[hourIdx] ?? 0;
+            const cSuccessivo = cloudArray[Math.min(hourIdx + 1, 23)] ?? cAttuale;
+            cloudCover = Math.round(cAttuale + (cSuccessivo - cAttuale) * (minuti / 60));
+        }
+        // --- FINE NUOVA LOGICA INTERPOLATA ---
 
         document.getElementById('r-wind').innerText = Math.round(hourly.wind_speed_10m[hourIdx]) + ' km/h';
         document.getElementById('r-hum').innerText = hourly.relative_humidity_2m[hourIdx] + '%';
@@ -333,11 +349,9 @@ async function updateAll(isManualTime = false) {
         const cloudValueEl = document.getElementById('r-cloud-percent');
         const cloudLabelEl = cloudValueEl.nextElementSibling;
         
-        // CORREZIONE QUI: Definiamo bene le stringhe
         const sunriseStr = daily.sunrise[0].split('T')[1].substring(0, 5);
         const sunsetStr  = daily.sunset[0].split('T')[1].substring(0, 5);
         
-        // CORREZIONE QUI: Usiamo le stringhe corrette per il calcolo decimale
         const sH = SolarEngine.timeToDecimal(sunriseStr);
         const eH = SolarEngine.timeToDecimal(sunsetStr);
         const isAlba = (ore === Math.floor(sH));
