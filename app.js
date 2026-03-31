@@ -688,34 +688,40 @@ if ('serviceWorker' in navigator) {
 function mostraAvvisoAggiornamento() {
   const avviso = document.createElement('div');
   
-  // Stile aggiornato per centratura universale e leggibilità mobile
   avviso.style = `
     position: fixed; 
-    bottom: 120px;           /* Alzato per non coprire la Navbar */
-    left: 50%; 
-    transform: translateX(-50%);
-    width: 90%;             /* Occupa il 90% della larghezza su mobile */
-    max-width: 400px;       /* Non supera i 400px su PC */
-    background: var(--accento, #38bdf8); 
-    color: #0f172a;         /* Blu scuro del tuo tema per contrasto */
-    padding: 16px 20px;
-    border-radius: 20px;    /* Arrotondato in linea con il tuo stile */
-    font-weight: 900;       /* Extra bold come il resto dell'app */
-    z-index: 10000; 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.6); 
+    top: 50%;               /* 50% dall'alto */
+    left: 50%;              /* 50% da sinistra */
+    transform: translate(-50%, -50%); /* Centratura matematica perfetta */
+    
+    width: 85%;             /* Un po' più stretto per sembrare un popup */
+    max-width: 350px; 
+    
+    background: var(--bg-badge, #1e293b); /* Usiamo il colore scuro del tuo tema */
+    color: white; 
+    padding: 30px 20px;
+    border-radius: 24px;
+    border: 2px solid var(--accento, #38bdf8); /* Bordo azzurro coordinato */
+    
+    font-weight: 900;
+    z-index: 10001;         /* Sopra a tutto */
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8); 
+    
     cursor: pointer;
     text-align: center; 
-    font-size: 14px;        /* Dimensione leggibile */
-    border: 2px solid white;
-    line-height: 1.4;
+    line-height: 1.5;
     text-transform: uppercase;
-    animation: slideUp 0.5s ease-out;
+    
+    /* Usiamo l'animazione slideUp che hai già */
+    animation: slideUpCenter 0.4s ease-out forwards;
   `;
 
-  // Messaggio più chiaro e centrato
   avviso.innerHTML = `
-    <div style="font-size: 16px; margin-bottom: 4px;">✨AGGIORNAMENTO DISPONIBILE✨</div>
-    <div style="font-size: 11px; opacity: 0.8;">TOCCA QUI PER INSTALLARE LA NUOVA VERSIONE</div>
+    <div style="font-size: 40px; margin-bottom: 15px;">✨</div>
+    <div style="font-size: 18px; color: var(--accento); margin-bottom: 10px;">Nuovo Aggiornamento</div>
+    <div style="font-size: 12px; opacity: 0.9; font-weight: 400;">
+      Abbiamo migliorato Vibe Solar.<br>Tocca qui per ricaricare l'app.
+    </div>
   `;
   
   avviso.onclick = () => {
