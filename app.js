@@ -684,20 +684,42 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// Funzione per mostrare un piccolo banner o messaggio
+// Funzione per mostrare un banner di aggiornamento centrale e adattivo
 function mostraAvvisoAggiornamento() {
   const avviso = document.createElement('div');
+  
+  // Stile aggiornato per centratura universale e leggibilità mobile
   avviso.style = `
-    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
-    background: var(--accento, #38bdf8); color: #000; padding: 12px 20px;
-    border-radius: 50px; font-weight: bold; z-index: 10000; 
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: pointer;
-    text-align: center; font-size: 0.9rem; border: 2px solid white;
+    position: fixed; 
+    bottom: 120px;           /* Alzato per non coprire la Navbar */
+    left: 50%; 
+    transform: translateX(-50%);
+    width: 90%;             /* Occupa il 90% della larghezza su mobile */
+    max-width: 400px;       /* Non supera i 400px su PC */
+    background: var(--accento, #38bdf8); 
+    color: #0f172a;         /* Blu scuro del tuo tema per contrasto */
+    padding: 16px 20px;
+    border-radius: 20px;    /* Arrotondato in linea con il tuo stile */
+    font-weight: 900;       /* Extra bold come il resto dell'app */
+    z-index: 10000; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6); 
+    cursor: pointer;
+    text-align: center; 
+    font-size: 14px;        /* Dimensione leggibile */
+    border: 2px solid white;
+    line-height: 1.4;
+    text-transform: uppercase;
+    animation: fadeInAggiornamento 0.5s ease-out;
   `;
-  avviso.innerHTML = "✨ NUOVA VERSIONE DISPONIBILE! <br> <small>TOCCA QUI PER AGGIORNARE</small>";
+
+  // Messaggio più chiaro e centrato
+  avviso.innerHTML = `
+    <div style="font-size: 16px; margin-bottom: 4px;">✨AGGIORNAMENTO DISPONIBILE✨</div>
+    <div style="font-size: 11px; opacity: 0.8;">TOCCA QUI PER INSTALLARE LA NUOVA VERSIONE</div>
+  `;
   
   avviso.onclick = () => {
-    window.location.reload(); // Ricarica la pagina per attivare i nuovi file
+    window.location.reload(); 
   };
   
   document.body.appendChild(avviso);
