@@ -146,18 +146,27 @@ function inizializzaProfilo() {
     if (displayNome) displayNome.innerText = nome;
     if (displayAvatar) displayAvatar.innerText = nome.charAt(0).toUpperCase();
 
-    // 2. Configura il tasto Logout
+  // 2. Configura il tasto Logout
     const btnLogout = document.getElementById('btnLogout');
     if (btnLogout) {
         btnLogout.onclick = () => {
             if (confirm("Vuoi uscire dal Garage di Vibe Solar?")) {
-                // Cancella tutti i dati di sessione
+                // --- PULIZIA TOTALE SESSIONE ---
                 localStorage.removeItem('vibe_auth_valid');
                 localStorage.removeItem('utente_corrente');
                 sessionStorage.removeItem('vibe_auth_valid');
                 sessionStorage.removeItem('utente_corrente');
+
+                // --- PULIZIA DATI TECNICI CAMPER (Il "Deep Clean") ---
+                localStorage.removeItem('vibe_camper_name');
+                localStorage.removeItem('vibe_batt_ah');
+                localStorage.removeItem('vibe_panel_wp');
+                localStorage.removeItem('vibe_ps_ah'); // O vibe_ps_wh a seconda di come lo salvi
+                localStorage.removeItem('vibe_ps_wh');
+                localStorage.removeItem('vibe_panel_ps_wp');
+                localStorage.removeItem('vibe_panel_tilt');
                 
-                // Ricarica la pagina per tornare al login
+                // Ricarica la pagina per resettare lo stato Javascript e tornare al login
                 location.reload();
             }
         };
