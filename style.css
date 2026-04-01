@@ -1229,42 +1229,75 @@ h2 {
 /* -----------------------------------------------------------------
    17. PAGINA DI LOGIN
    ----------------------------------------------------------------- */
-/* Effetto caricamento pulsante */
-.btn-loading {
-    opacity: 0.7;
-    cursor: not-allowed;
-    filter: grayscale(0.5);
+
+#lockScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-puro);
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* Blocca ogni sforamento interno */
 }
 
-/* Animazione di scuotimento per errore */
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-10px); }
-    75% { transform: translateX(10px); }
+/* Contenitore centrale per limitare la larghezza degli input */
+.login-container {
+    width: 100%;
+    max-width: 300px; /* Impedisce agli input di toccare i bordi del telefono */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 20px;
 }
 
-.shake {
-    animation: shake 0.4s ease-in-out;
+#lockScreen input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--accento);
+    color: white;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 12px;
+    outline: none;
+    font-size: 16px; /* Evita lo zoom automatico su iPhone */
 }
 
-/* Barra di caricamento globale */
+#btnUnlock {
+    width: 100%;
+    padding: 15px;
+    background: var(--accento);
+    color: var(--bg-puro);
+    border: none;
+    border-radius: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+/* Barra di caricamento sotto il tasto */
 #global-loader {
     width: 100%;
     height: 4px;
     background: rgba(255, 255, 255, 0.1);
-    margin-top: 15px; /* Distanza dal pulsante sopra */
+    margin-top: 20px; 
     margin-bottom: 5px;
     border-radius: 10px;
-    display: none; /* Nascosto di base */
+    display: none;
     overflow: hidden;
-    position: relative; /* Non più fixed! */
+    position: relative;
 }
 
 #global-loader div {
     width: 40%;
     height: 100%;
-    background: #38bdf8; /* Colore azzurro come il tuo tema */
-    box-shadow: 0 0 10px #38bdf8;
+    background: var(--accento);
+    box-shadow: 0 0 10px var(--accento);
     position: absolute;
     animation: loading-bar 1.2s infinite ease-in-out;
 }
@@ -1272,6 +1305,21 @@ h2 {
 #global-loader.active {
     display: block !important;
 }
+
+/* Effetti e Animazioni */
+.btn-loading {
+    opacity: 0.7;
+    cursor: not-allowed;
+    filter: grayscale(0.5);
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+.shake { animation: shake 0.4s ease-in-out; }
 
 @keyframes loading-bar {
     0% { left: -40%; }
