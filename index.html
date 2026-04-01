@@ -173,7 +173,22 @@
                 <input type="text" id="camper_name_input" placeholder="NOME CAMPER" class="manual-input">
                 <button id="btn-save-name" class="mini-btn">💾</button>
             </div>
+<div class="garage-card" style="margin-top: 20px; border-top: 2px solid var(--accento); padding-top: 20px;">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div id="userAvatar" style="width: 40px; height: 40px; background: var(--accento); color: #0f172a; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(56, 189, 248, 0.2);">
+                </div>
+            <div>
+                <span style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; display: block; margin-bottom: -2px;">Account Attivo</span>
+                <h3 id="displayUserName" style="margin: 0; font-size: 1rem; color: white; letter-spacing: 0.5px;">Utente</h3>
+            </div>
+        </div>
 
+        <button id="btnLogout" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 8px 15px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; font-weight: bold; transition: all 0.3s ease;">
+            LOGOUT 🚪
+        </button>
+    </div>
+</div>
             <div class="config-group camper-border">
                 <div class="group-header">IMPIANTO FISSO CAMPER</div>
                 <div class="config-grid-row">
