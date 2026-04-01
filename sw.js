@@ -2,7 +2,7 @@
    SERVICE WORKER - Vibe Solar v3.2
    ========================================================= */
 
-const CACHE_NAME = 'Vibe_Solar_v3.2.18'; // Incrementa v1, v2, v3 per forzare gli aggiornamenti
+const CACHE_NAME = 'Vibe_Solar_v3.2.19'; // Incrementa v1, v2, v3 per forzare gli aggiornamenti
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
