@@ -545,41 +545,58 @@ for (let h = startH; h <= endH; h++) {
    6. GARAGE
    ========================================================= */
 
+/* =========================================================
+   6. GARAGE (VERSIONE AGGIORNATA CON ANIMAZIONE BORDO)
+   ========================================================= */
+
 function saveGarageSettings() {
+    const btn = document.getElementById('btn-save-name');
     const name = document.getElementById('camper_name_input').value.trim();
     
-    // 1. Salvataggio Locale (quello che avevi già)
+    if (!btn) return;
+
+    // 1. STATO CARICAMENTO (Attiva l'animazione del bordo nel CSS)
+    btn.classList.add('loading');
+    btn.disabled = true;
+    const originalText = btn.innerText;
+    btn.innerText = ""; // Svuotiamo il testo per far vedere la scia luminosa
+
+    // Salvataggio Locale immediato
     localStorage.setItem('vibe_camper_name', name);
     localStorage.setItem('vibe_batt_ah',      state.battAh);
-    localStorage.setItem('vibe_panel_wp',     state.panelWp);
-    localStorage.setItem('vibe_ps_ah',        state.psAh);
-    localStorage.setItem('vibe_panel_ps_wp',  state.panelPsWp);
+    localStorage.setItem('vibe_panel_wp',      state.panelWp);
+    localStorage.setItem('vibe_ps_ah',         state.psAh);
+    localStorage.setItem('vibe_panel_ps_wp',   state.panelPsWp);
 
     const display = document.getElementById('camper-name-display');
     if (display && name) display.innerText = name.toUpperCase();
 
-    // 2. Feedback visivo sul tasto
-    const btn = document.getElementById('btn-save-name');
-    if (btn) {
-        const originalText = btn.innerText;
-        btn.innerText = "SALVATAGGIO IN CORSO... ⏳";
-        btn.style.background = '#f59e0b'; // Arancione durante l'invio
-        
-        // 3. INVIO AL CLOUD (Chiamiamo la funzione che hai già sotto)
-        salvaConfigurazioneSuCloud().then(success => {
-            if(success) {
-                btn.style.background = '#16a34a'; // Verde se ok
-                btn.innerText = "CONFIGURAZIONE SALVATA! ✅";
-            } else {
-                btn.style.background = '#dc2626'; // Rosso se errore
-                btn.innerText = "ERRORE SALVAGGIO ❌";
-            }
-            setTimeout(() => { 
-                btn.style.background = ''; 
-                btn.innerText = originalText;
-            }, 2500);
-        });
-    }
+    // 2. INVIO AL CLOUD
+    salvaConfigurazioneSuCloud().then(success => {
+        // Rimuoviamo l'animazione di caricamento
+        btn.classList.remove('loading');
+
+        if (success) {
+            // 3. STATO SUCCESSO (Verde + Spunta)
+            btn.classList.add('success');
+            btn.innerText = "✅";
+        } else {
+            // 4. STATO ERRORE (Rosso + X)
+            btn.classList.add('error');
+            btn.innerText = "❌";
+        }
+
+        // 5. RESET FINALE (Torna normale dopo 2 secondi)
+        setTimeout(() => {
+            btn.classList.remove('success', 'error');
+            btn.innerText = "SALVA"; // O l'emoji 💾 se preferisci
+            btn.disabled = false;
+            
+            // Aggiorniamo la UI generale per riflettere i nuovi dati
+            loadSavedData();
+            updateAll();
+        }, 2000);
+    });
 }
 
 function mostraLoader(stato) {
