@@ -1,16 +1,17 @@
 /* =========================================================
    ACCESS.JS - Gestione Sicurezza e Registro Accessi
    ========================================================= */
-const URL_SCRIPT_GOOGLE = "https://script.google.com/macros/s/AKfycbxEyygp3xf6GT9gBBFtNaUkY10WhK5dWh9LpEK8uXTXyJTh4iYxoEcgvLp7Q0NdY5OA/exec";
+const URL_SCRIPT_GOOGLE = "https://script.google.com/macros/s/AKfycbzUoTpD95_mX-0uQEsn2VKPVqVYX1LAsuOoh99au7hC11rZwuhSAtD6q199fbY7_syx/exec";
 
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Controllo sessione esistente (localStorage O sessionStorage)
+document.addEventListener('DOMContentLoaded', async () => {
     const isLocalValid = localStorage.getItem('vibe_auth_valid') === 'true';
     const isSessionValid = sessionStorage.getItem('vibe_auth_valid') === 'true';
 
     if (isLocalValid || isSessionValid) {
+        // Scarica i dati prima di nascondere la schermata di blocco
+        await sincronizzaDatiGarage(); 
         document.getElementById('lockScreen').style.display = 'none';
-       inizializzaProfilo();
+        inizializzaProfilo();
     }
 
     // 2. Event Listener per il tasto login
@@ -92,7 +93,7 @@ async function validaAccesso() {
                 sessionStorage.setItem('utente_corrente', user);
                 localStorage.removeItem('vibe_auth_valid');
             }
-            
+            await sincronizzaDatiGarage();
             inizializzaProfilo();
             document.getElementById('lockScreen').style.display = 'none';
         } else {
