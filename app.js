@@ -542,16 +542,18 @@ for (let h = startH; h <= endH; h++) {
     if (totalDisplay) totalDisplay.innerText = Math.round(dailyTotal) + ' Wh';
 }
 /* =========================================================
-   6. GARAGE
-   ========================================================= */
-
-/* =========================================================
    6. GARAGE (VERSIONE AGGIORNATA CON ANIMAZIONE BORDO)
    ========================================================= */
 
 function saveGarageSettings() {
     const btn = document.getElementById('btn-save-name');
-    const name = document.getElementById('camper_name_input').value.trim();
+    const inputElement = document.getElementById('camper_name_input');
+    
+    // Recupera il valore, rimuovi spazi e trasforma in MAIUSCOLO
+    const name = inputElement.value.trim().toUpperCase();
+    
+    // Aggiorna visivamente l'input nel caso l'utente abbia scritto in minuscolo
+    inputElement.value = name;
     
     if (!btn) return;
 
@@ -561,15 +563,15 @@ function saveGarageSettings() {
     const originalText = btn.innerText;
     btn.innerText = ""; // Svuotiamo il testo per far vedere la scia luminosa
 
-    // Salvataggio Locale immediato
+    // Salvataggio Locale immediato (con 'name' ora in maiuscolo)
     localStorage.setItem('vibe_camper_name', name);
     localStorage.setItem('vibe_batt_ah',      state.battAh);
     localStorage.setItem('vibe_panel_wp',      state.panelWp);
-    localStorage.setItem('vibe_ps_ah',         state.psAh);
+    localStorage.setItem('vibe_ps_ah',          state.psAh);
     localStorage.setItem('vibe_panel_ps_wp',   state.panelPsWp);
 
     const display = document.getElementById('camper-name-display');
-    if (display && name) display.innerText = name.toUpperCase();
+    if (display && name) display.innerText = name; // Già maiuscolo
 
     // 2. INVIO AL CLOUD
     salvaConfigurazioneSuCloud().then(success => {
@@ -589,7 +591,7 @@ function saveGarageSettings() {
         // 5. RESET FINALE (Torna normale dopo 2 secondi)
         setTimeout(() => {
             btn.classList.remove('success', 'error');
-            btn.innerText = "SALVA"; // O l'emoji 💾 se preferisci
+            btn.innerText = "SALVA"; 
             btn.disabled = false;
             
             // Aggiorniamo la UI generale per riflettere i nuovi dati
