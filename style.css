@@ -1228,3 +1228,24 @@ h2 {
     .report-item .lbl { font-size: 0.7rem; color: #94a3b8; }
     .report-item .val { font-size: 1.1rem; }
 }
+
+/* -----------------------------------------------------------------
+   17. PAGINA DI LOGIN
+   ----------------------------------------------------------------- */
+/* Effetto caricamento pulsante */
+.btn-loading {
+    opacity: 0.7;
+    cursor: not-allowed;
+    filter: grayscale(0.5);
+}
+
+/* Animazione di scuotimento per errore */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+.shake {
+    animation: shake 0.4s ease-in-out;
+}
