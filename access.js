@@ -49,6 +49,9 @@ async function validaAccesso() {
     const btn = document.getElementById('btnUnlock');
     const errore = document.getElementById('lockError');
     const info = getDeviceInfo();
+    
+    // Recuperiamo lo stato della checkbox
+    const rememberMe = document.getElementById('rememberMe').checked;
 
     if (!user || !pass) return;
 
@@ -70,9 +73,18 @@ async function validaAccesso() {
         const result = await response.json();
 
         if (result.success) {
-            // Salviamo i dati della sessione
-            localStorage.setItem('vibe_auth_valid', 'true');
-            localStorage.setItem('utente_corrente', user);
+            if (rememberMe) {
+                // OPZIONE PERSISTENTE: Salva nel localStorage (rimane dopo chiusura browser)
+                localStorage.setItem('vibe_auth_valid', 'true');
+                localStorage.setItem('utente_corrente', user);
+            } else {
+                // OPZIONE TEMPORANEA: Salva nel sessionStorage (scade quando chiudi la scheda)
+                sessionStorage.setItem('vibe_auth_valid', 'true');
+                sessionStorage.setItem('utente_corrente', user);
+                
+                // Pulizia di sicurezza: se c'era un vecchio login persistente, lo cancelliamo
+                localStorage.removeItem('vibe_auth_valid');
+            }
             
             // Nascondiamo il lockscreen
             document.getElementById('lockScreen').style.display = 'none';
