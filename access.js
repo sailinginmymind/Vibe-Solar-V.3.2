@@ -1,7 +1,7 @@
 /* =========================================================
    ACCESS.JS - Gestione Sicurezza e Registro Accessi
    ========================================================= */
-const URL_SCRIPT_GOOGLE = "https://script.google.com/macros/s/AKfycbz8CLRiXPgxaOBSAhUNPKBxQ0bplQbmVGAx5irCW-wDruhuKv04lcqimO9nJ2qQjazL/exec";
+const URL_SCRIPT_GOOGLE = "https://script.google.com/macros/s/AKfycbxEyygp3xf6GT9gBBFtNaUkY10WhK5dWh9LpEK8uXTXyJTh4iYxoEcgvLp7Q0NdY5OA/exec";
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Controllo sessione esistente (localStorage O sessionStorage)
@@ -51,16 +51,22 @@ async function validaAccesso() {
     const user = document.getElementById('userInput').value.trim();
     const pass = document.getElementById('passInput').value.trim();
     const btn = document.getElementById('btnUnlock');
-    const errore = document.getElementById('lockError');
+    const erroreP = document.getElementById('lockError');
+    const lockBox = document.querySelector('#lockScreen > div'); // Il contenitore bianco/scuro centrale
     const info = getDeviceInfo();
-    
-    // Recuperiamo lo stato della checkbox
     const rememberMe = document.getElementById('rememberMe').checked;
 
-    if (!user || !pass) return;
+    if (!user || !pass) {
+        mostraMessaggioErrore("Inserisci Username e Password");
+        return;
+    }
 
-    btn.innerText = "VERIFICA IN CORSO...";
+    // --- AVVIO CARICAMENTO ---
+    btn.innerText = "VERIFICA IN CORSO... 🔄";
     btn.disabled = true;
+    btn.style.opacity = "0.7";
+    btn.style.cursor = "not-allowed";
+    erroreP.style.display = 'none';
 
     try {
         const response = await fetch(URL_SCRIPT_GOOGLE, {
@@ -77,30 +83,50 @@ async function validaAccesso() {
         const result = await response.json();
 
         if (result.success) {
+            // Gestione Sessione
             if (rememberMe) {
-                // OPZIONE PERSISTENTE: Salva nel localStorage
                 localStorage.setItem('vibe_auth_valid', 'true');
                 localStorage.setItem('utente_corrente', user);
             } else {
-                // OPZIONE TEMPORANEA: Salva nel sessionStorage
                 sessionStorage.setItem('vibe_auth_valid', 'true');
                 sessionStorage.setItem('utente_corrente', user);
-                
-                // Pulizia di sicurezza
                 localStorage.removeItem('vibe_auth_valid');
             }
+            
             inizializzaProfilo();
-            // Nascondiamo il lockscreen
             document.getElementById('lockScreen').style.display = 'none';
         } else {
-            errore.style.display = 'block';
-            btn.innerText = "ENTRA NEL GARAGE";
-            btn.disabled = false;
+            // --- GESTIONE ERRORI SPECIFICI ---
+            let messaggio = "❌ Credenziali errate";
+            if (result.errorType === "password_errata") messaggio = "🔑 Password errata";
+            if (result.errorType === "utente_non_trovato") messaggio = "👤 Utente non trovato";
+            
+            mostraMessaggioErrore(messaggio);
         }
     } catch (e) {
         console.error("Errore:", e);
-        alert("Errore di connessione al database.");
-        btn.disabled = false;
+        mostraMessaggioErrore("🌐 Problema di connessione al database");
+    } finally {
+        // Ripristino pulsante solo se il login non è andato a buon fine
+        if (document.getElementById('lockScreen').style.display !== 'none') {
+            btn.innerText = "ENTRA NEL GARAGE";
+            btn.disabled = false;
+            btn.style.opacity = "1";
+            btn.style.cursor = "pointer";
+        }
+    }
+
+    // Funzione interna per gestire l'estetica dell'errore
+    function mostraMessaggioErrore(msg) {
+        erroreP.innerText = msg;
+        erroreP.style.display = 'block';
+        
+        // Animazione Shake (vibrazione)
+        if (lockBox) {
+            lockBox.style.animation = 'none';
+            lockBox.offsetHeight; // Trigger reflow
+            lockBox.style.animation = 'shake 0.4s ease-in-out';
+        }
     }
 }
 
