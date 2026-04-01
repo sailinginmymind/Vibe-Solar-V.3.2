@@ -15,7 +15,7 @@
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
-    <div id="lockScreen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0f172a; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-family: sans-serif;">
+<div id="lockScreen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0f172a; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-family: sans-serif;">
     <div style="text-align: center; width: 85%; max-width: 350px;">
         <div style="font-size: 60px; margin-bottom: 10px;">🚐</div>
         <h1 style="margin-bottom: 5px; letter-spacing: -1px;">Vibe Solar v.3.2.0</h1>
@@ -23,7 +23,12 @@
         
         <input type="text" id="userInput" placeholder="Username" style="width: 100%; padding: 15px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #334155; background: #1e293b; color: white; box-sizing: border-box; outline: none;">
         
-        <input type="password" id="passInput" placeholder="Password" style="width: 100%; padding: 15px; margin-bottom: 25px; border-radius: 12px; border: 1px solid #334155; background: #1e293b; color: white; box-sizing: border-box; outline: none;">
+        <input type="password" id="passInput" placeholder="Password" style="width: 100%; padding: 15px; margin-bottom: 20px; border-radius: 12px; border: 1px solid #334155; background: #1e293b; color: white; box-sizing: border-box; outline: none;">
+        
+        <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 25px; color: #94a3b8; font-size: 14px; cursor: pointer;">
+            <input type="checkbox" id="rememberMe" style="width: 18px; height: 18px; cursor: pointer; accent-color: #38bdf8;">
+            <label for="rememberMe" style="cursor: pointer; user-select: none;">Resta collegato</label>
+        </div>
         
         <button id="btnUnlock" style="width: 100%; padding: 15px; background: #38bdf8; color: #0f172a; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; transition: transform 0.2s;">ENTRA NEL GARAGE</button>
         
