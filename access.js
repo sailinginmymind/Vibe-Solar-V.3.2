@@ -4,8 +4,11 @@
 const URL_SCRIPT_GOOGLE = "https://script.google.com/macros/s/AKfycbz8CLRiXPgxaOBSAhUNPKBxQ0bplQbmVGAx5irCW-wDruhuKv04lcqimO9nJ2qQjazL/exec";
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Controllo sessione esistente (es. validità 24h)
-    if (localStorage.getItem('vibe_auth_valid') === 'true') {
+    // 1. Controllo sessione esistente (localStorage O sessionStorage)
+    const isLocalValid = localStorage.getItem('vibe_auth_valid') === 'true';
+    const isSessionValid = sessionStorage.getItem('vibe_auth_valid') === 'true';
+
+    if (isLocalValid || isSessionValid) {
         document.getElementById('lockScreen').style.display = 'none';
     }
 
@@ -74,15 +77,15 @@ async function validaAccesso() {
 
         if (result.success) {
             if (rememberMe) {
-                // OPZIONE PERSISTENTE: Salva nel localStorage (rimane dopo chiusura browser)
+                // OPZIONE PERSISTENTE: Salva nel localStorage
                 localStorage.setItem('vibe_auth_valid', 'true');
                 localStorage.setItem('utente_corrente', user);
             } else {
-                // OPZIONE TEMPORANEA: Salva nel sessionStorage (scade quando chiudi la scheda)
+                // OPZIONE TEMPORANEA: Salva nel sessionStorage
                 sessionStorage.setItem('vibe_auth_valid', 'true');
                 sessionStorage.setItem('utente_corrente', user);
                 
-                // Pulizia di sicurezza: se c'era un vecchio login persistente, lo cancelliamo
+                // Pulizia di sicurezza
                 localStorage.removeItem('vibe_auth_valid');
             }
             
