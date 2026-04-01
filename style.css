@@ -1258,7 +1258,7 @@ h2 {
     width: 100%;
     height: 3px;
     background: rgba(255, 255, 255, 0.1);
-    z-index: 9999;
+    z-index: 99999;
     display: none; /* Nascosta di base */
     overflow: hidden;
 }
