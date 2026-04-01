@@ -676,25 +676,33 @@ async function sincronizzaDatiGarage() {
         const res = await response.json();
 
         if (res.success && res.data) {
-            // Aggiorniamo lo STATO con i dati del database
+            // 1. Aggiorniamo lo STATO globale dell'app
             state.panelWp = parseFloat(res.data.lineaA) || 0;
             state.panelPsWp = parseFloat(res.data.lineaB) || 0;
-            state.battAh = parseFloat(res.data.batteria) || 0;
+            state.battAh = parseFloat(res.data.batteriaAh) || 0;
+            state.psWh = parseFloat(res.data.powerStationWh) || 0;
 
-            // Aggiorniamo anche il localStorage locale così l'app è pronta al prossimo avvio
+            // 2. Aggiorniamo il Nome del Camper nell'interfaccia
+            const displayNome = document.getElementById('camperName');
+            if (displayNome && res.data.nomeCamper) {
+                displayNome.innerText = res.data.nomeCamper;
+            }
+
+            // 3. Salviamo nel localStorage locale per i prossimi avvii offline
             localStorage.setItem('vibe_panel_wp', state.panelWp);
             localStorage.setItem('vibe_panel_ps_wp', state.panelPsWp);
             localStorage.setItem('vibe_batt_ah', state.battAh);
+            localStorage.setItem('vibe_ps_wh', state.psWh);
+            localStorage.setItem('vibe_camper_name', res.data.nomeCamper);
 
-            // Applichiamo i cambiamenti alla UI
+            // 4. Forziamo l'aggiornamento della grafica (input e calcoli)
             loadSavedData(); 
-            if (typeof updateConversions === 'function') updateConversions();
-            updateAll(); // Ricalcola i watt in base ai nuovi pannelli
+            updateAll();
             
-            console.log("🛠️ Garage sincronizzato dal Cloud!");
+            console.log("✅ Sincronizzazione completata per: " + res.data.nomeCamper);
         }
     } catch (e) {
-        console.error("Errore sincronizzazione cloud:", e);
+        console.error("❌ Errore sincronizzazione:", e);
     }
 }
 /* =========================================================
