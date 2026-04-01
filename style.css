@@ -948,26 +948,28 @@ h2 {
 
 .garage-input-group {
     display: flex;
-    gap: 10px;
-    align-items: center;
+    gap: 15px; /* Aumentato lo spazio tra input e tasto Salva */
+    align-items: stretch;
     margin-bottom: 25px;
 }
 
-.garage-input-group .manual-input {
+/* L'input del nome camper ora è in MAIUSCOLO */
+#camper_name_input {
+    text-transform: uppercase;
     margin: 0;
-    flex: 1;
+    flex: 1; /* Prende lo spazio necessario */
+    min-width: 0;
 }
 
-.garage-input-group .mini-btn {
-    height: 38px;
-    width: 45px;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* Il tasto Salva ora è più spazioso a sinistra e destra */
+#btn-save-name {
+    flex: 0 0 auto;
+    padding: 0 25px; /* Spazio interno aumentato */
+    min-width: 100px;
 }
 
-/* Gruppi di configurazione (Camper / Power Station) */
+/* --- IL RESTO DEL BLOCCO 13 CHE DEVE RIMANERE --- */
+
 .config-group {
     border-radius: 12px;
     padding: 15px;
@@ -991,7 +993,6 @@ h2 {
     padding-right: 10px;
 }
 
-/* Bordi colorati per distinguere i due impianti */
 .camper-border {
     border-color: rgba(56, 189, 248, 0.25);
     box-shadow: 0 0 10px rgba(56, 189, 248, 0.05);
@@ -1035,7 +1036,6 @@ h2 {
     color: #fff;
 }
 
-/* Valori di conversione Ah↔Wh */
 #batt_conv_val {
     color: #38bdf8;
     text-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
