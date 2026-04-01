@@ -1249,3 +1249,34 @@ h2 {
 .shake {
     animation: shake 0.4s ease-in-out;
 }
+
+/* Barra di caricamento globale */
+#global-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    z-index: 9999;
+    display: none; /* Nascosta di base */
+    overflow: hidden;
+}
+
+#global-loader div {
+    width: 30%;
+    height: 100%;
+    background: var(--accento, #fbbf24); /* Usa il tuo colore giallo/arancio */
+    box-shadow: 0 0 10px var(--accento, #fbbf24);
+    position: absolute;
+    animation: loading-bar 1.5s infinite ease-in-out;
+}
+
+@keyframes loading-bar {
+    0% { left: -30%; }
+    100% { left: 110%; }
+}
+
+#global-loader.active {
+    display: block;
+}
