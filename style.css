@@ -42,14 +42,16 @@ body.tema-grigio {
    ----------------------------------------------------------------- */
 
 * {
-    box-sizing: border-box;
+    box-sizing: border-box; /* Fondamentale: include bordi e padding nel calcolo della larghezza */
     -webkit-tap-highlight-color: transparent;
 }
 
 html {
     width: 100%;
-    overflow-x: hidden;
+    overflow-x: hidden; /* Blocca lo scroll orizzontale a livello radice */
     height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 body {
@@ -63,6 +65,7 @@ body {
     padding-bottom: 140px;
     transition: background-color 0.4s ease;
     width: 100%;
+    max-width: 100%;
     overflow-x: hidden;      /* Blocca lo scroll a destra/sinistra */
     position: relative;
 }
