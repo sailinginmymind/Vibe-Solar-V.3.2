@@ -641,11 +641,9 @@ async function salvaConfigurazioneSuCloud() {
     const utente = localStorage.getItem('utente_corrente') || sessionStorage.getItem('utente_corrente');
     if (!utente) return false; 
 
-    // 1. CORREZIONE ID: Usiamo 'camper-name-display' (quello usato nel resto del file)
     const nomeCamperElement = document.getElementById('camper-name-display');
     const nomeCamper = nomeCamperElement ? nomeCamperElement.innerText : "Il mio Camper";
 
-    // 2. CORREZIONE VARIABILE: Usiamo 'state.psAh' che è il nome corretto nello stato
     const dati = {
         action: "salvaDatiCamper",
         username: utente,
@@ -653,8 +651,11 @@ async function salvaConfigurazioneSuCloud() {
         lineaA: state.panelWp,
         lineaB: state.panelPsWp,
         batteriaAh: state.battAh,
-        powerStationWh: state.psAh // <--- Qui usiamo il valore corretto
+        powerStationWh: state.psAh
     };
+
+    // --- 1. MOSTRA LA BARRA ---
+    mostraLoader(true);
 
     try {
         const response = await fetch(URL_SCRIPT_GOOGLE, {
@@ -666,6 +667,9 @@ async function salvaConfigurazioneSuCloud() {
     } catch (e) {
         console.error("❌ Errore nel salvataggio cloud:", e);
         return false;
+    } finally {
+        // --- 2. NASCONDI LA BARRA SEMPRE (sia se OK che se ERRORE) ---
+        mostraLoader(false);
     }
 }
 
@@ -673,31 +677,36 @@ async function sincronizzaDatiGarage() {
     const utente = localStorage.getItem('utente_corrente') || sessionStorage.getItem('utente_corrente');
     if (!utente) return;
 
+    // --- 1. MOSTRA IL CARICAMENTO ---
+    mostraLoader(true);
+
     try {
         const response = await fetch(`${URL_SCRIPT_GOOGLE}?action=getDatiCamper&username=${encodeURIComponent(utente)}`);
         const res = await response.json();
 
         if (res.success && res.data) {
-            // 1. Aggiorniamo lo STATO globale dell'app
+            // Aggiorniamo lo STATO globale dell'app
             state.panelWp = parseFloat(res.data.lineaA) || 0;
             state.panelPsWp = parseFloat(res.data.lineaB) || 0;
             state.battAh = parseFloat(res.data.batteriaAh) || 0;
             state.psAh = parseFloat(res.data.powerStationWh) || 0;
 
-            // 2. Aggiorniamo il Nome del Camper nell'interfaccia
+            // Aggiorniamo il Nome del Camper nell'interfaccia
             const displayNome = document.getElementById('camperName');
             if (displayNome && res.data.nomeCamper) {
                 displayNome.innerText = res.data.nomeCamper;
             }
 
-            // 3. Salviamo nel localStorage locale per i prossimi avvii offline
+            // Salviamo nel localStorage locale
             localStorage.setItem('vibe_panel_wp', state.panelWp);
             localStorage.setItem('vibe_panel_ps_wp', state.panelPsWp);
             localStorage.setItem('vibe_batt_ah', state.battAh);
-            localStorage.setItem('vibe_ps_wh', state.psWh);
+            
+            // NOTA: Qui ho corretto state.psWh in state.psAh come definito sopra
+            localStorage.setItem('vibe_ps_wh', state.psAh); 
             localStorage.setItem('vibe_camper_name', res.data.nomeCamper);
 
-            // 4. Forziamo l'aggiornamento della grafica (input e calcoli)
+            // Forziamo l'aggiornamento della grafica
             loadSavedData(); 
             updateAll();
             
@@ -705,6 +714,9 @@ async function sincronizzaDatiGarage() {
         }
     } catch (e) {
         console.error("❌ Errore sincronizzazione:", e);
+    } finally {
+        // --- 2. NASCONDI IL CARICAMENTO ---
+        mostraLoader(false);
     }
 }
 /* =========================================================
