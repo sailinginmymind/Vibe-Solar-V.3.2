@@ -582,6 +582,16 @@ function saveGarageSettings() {
     }
 }
 
+function mostraLoader(stato) {
+    const loader = document.getElementById('global-loader');
+    if (!loader) return;
+    if (stato) {
+        loader.classList.add('active');
+    } else {
+        loader.classList.remove('active');
+    }
+}
+
 function loadSavedData() {
     const savedName = localStorage.getItem('vibe_camper_name');
     if (savedName) {
