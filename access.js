@@ -68,7 +68,7 @@ async function validaAccesso() {
     btn.style.opacity = "0.7";
     btn.style.cursor = "not-allowed";
     erroreP.style.display = 'none';
-
+    mostraLoader(true);
     try {
         const response = await fetch(URL_SCRIPT_GOOGLE, {
             method: 'POST',
@@ -108,6 +108,7 @@ async function validaAccesso() {
         console.error("Errore:", e);
         mostraMessaggioErrore("🌐 Problema di connessione al database");
     } finally {
+       mostraLoader(false);
         // Ripristino pulsante solo se il login non è andato a buon fine
         if (document.getElementById('lockScreen').style.display !== 'none') {
             btn.innerText = "ENTRA NEL GARAGE";
@@ -170,5 +171,15 @@ function inizializzaProfilo() {
                 location.reload();
             }
         };
+    }
+}
+
+function mostraLoader(stato) {
+    const loader = document.getElementById('global-loader');
+    if (!loader) return;
+    if (stato) {
+        loader.classList.add('active');
+    } else {
+        loader.classList.remove('active');
     }
 }
