@@ -700,7 +700,7 @@ function setupStars() {
 }
 
 /* =========================================================
-   LOGICA PWA: REGISTRAZIONE E AGGIORNAMENTO
+   9. LOGICA PWA: REGISTRAZIONE E AGGIORNAMENTO
    ========================================================= */
 
 if ('serviceWorker' in navigator) {
@@ -770,7 +770,7 @@ function mostraAvvisoAggiornamento() {
 }
 
 /* =========================================================
-   RILEVAMENTO INSTALLAZIONE iOS (SAFARI)
+   9A. RILEVAMENTO INSTALLAZIONE iOS (SAFARI)
    ========================================================= */
 
 function controllaInstallazioneIos() {
@@ -816,3 +816,54 @@ window.addEventListener('load', () => {
     generaStelle();             
     controllaInstallazioneIos(); 
 });
+
+/* =========================================================
+   10. LOGIN VIBE_SOLAR
+   ========================================================= */
+const URL_SCRIPT_GOOGLE = "https://script.google.com/macros/s/AKfycbze-ezIeD8X9tLnTvhlUI3DXDimMIbR9XY1Yk3v_kCVogYP3KChIRJpZrwnpFWg5QwX/exec";
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Controllo se c'è già un login valido (per evitare di rifarlo ogni volta)
+    if (localStorage.getItem('vibe_auth_valid') === 'true') {
+        document.getElementById('lockScreen').style.display = 'none';
+    }
+    document.getElementById('btnUnlock').addEventListener('click', validaAccesso);
+});
+
+async function validaAccesso() {
+    const user = document.getElementById('userInput').value.trim();
+    const pass = document.getElementById('passInput').value.trim();
+    const btn = document.getElementById('btnUnlock');
+    const errore = document.getElementById('lockError');
+
+    if (!user || !pass) return;
+
+    btn.innerText = "VERIFICA IN CORSO...";
+    btn.disabled = true;
+
+    try {
+        const response = await fetch(URL_SCRIPT_GOOGLE, {
+            method: 'POST',
+            body: JSON.stringify({ 
+                action: 'login', 
+                username: user, 
+                password: pass 
+            })
+        });
+        
+        const result = await response.json();
+
+        if (result.success) {
+            localStorage.setItem('vibe_auth_valid', 'true');
+            localStorage.setItem('utente_corrente', user);
+            document.getElementById('lockScreen').style.display = 'none';
+        } else {
+            errore.style.display = 'block';
+            btn.innerText = "ENTRA NEL GARAGE";
+            btn.disabled = false;
+        }
+    } catch (e) {
+        alert("Errore di connessione al database.");
+        btn.disabled = false;
+    }
+}
