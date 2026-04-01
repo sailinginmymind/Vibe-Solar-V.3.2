@@ -1116,15 +1116,17 @@ h2 {
     width: 95%;
     max-width: 550px;
     height: 75px;
-    background: var(--bg-badge) !important;
-    backdrop-filter: blur(12px) saturate(160%);
+    background: var(--bg-puro) !important;
+    background-color: rgba(15, 23, 42, 0.95) !important;
+   -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
     display: flex;
     align-items: center;
     padding: 0 15px;
     border-radius: 20px;
     border: 1px solid var(--accento) !important;
     z-index: 1000;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
     transition: all 0.3s ease;
     box-sizing: border-box;
 }
