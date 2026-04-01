@@ -269,7 +269,6 @@ async function handleGpsSync() {
             
             // --- RIMOZIONE EFFETTO GLOW ---
             btn.classList.remove('glow-active');
-            // ------------------------------
         }, 2000);
     }
 }
@@ -651,6 +650,37 @@ async function salvaConfigurazioneSuCloud() {
     } catch (e) {
         console.error("❌ Errore nel salvataggio cloud:", e);
         return false;
+    }
+}
+
+async function sincronizzaDatiGarage() {
+    const utente = localStorage.getItem('utente_corrente') || sessionStorage.getItem('utente_corrente');
+    if (!utente) return;
+
+    try {
+        const response = await fetch(`${URL_SCRIPT_GOOGLE}?action=getDatiCamper&username=${encodeURIComponent(utente)}`);
+        const res = await response.json();
+
+        if (res.success && res.data) {
+            // Aggiorniamo lo STATO con i dati del database
+            state.panelWp = parseFloat(res.data.lineaA) || 0;
+            state.panelPsWp = parseFloat(res.data.lineaB) || 0;
+            state.battAh = parseFloat(res.data.batteria) || 0;
+
+            // Aggiorniamo anche il localStorage locale così l'app è pronta al prossimo avvio
+            localStorage.setItem('vibe_panel_wp', state.panelWp);
+            localStorage.setItem('vibe_panel_ps_wp', state.panelPsWp);
+            localStorage.setItem('vibe_batt_ah', state.battAh);
+
+            // Applichiamo i cambiamenti alla UI
+            loadSavedData(); 
+            if (typeof updateConversions === 'function') updateConversions();
+            updateAll(); // Ricalcola i watt in base ai nuovi pannelli
+            
+            console.log("🛠️ Garage sincronizzato dal Cloud!");
+        }
+    } catch (e) {
+        console.error("Errore sincronizzazione cloud:", e);
     }
 }
 /* =========================================================
