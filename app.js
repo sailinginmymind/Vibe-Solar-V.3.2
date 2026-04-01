@@ -547,21 +547,40 @@ for (let h = startH; h <= endH; h++) {
    ========================================================= */
 
 function saveGarageSettings() {
-    const name = document.getElementById('camper_name_input').value.trim();
-    localStorage.setItem('vibe_camper_name', name);
-    localStorage.setItem('vibe_batt_ah',     state.battAh);
-    localStorage.setItem('vibe_panel_wp',    state.panelWp);
-    localStorage.setItem('vibe_ps_ah',       state.psAh);
-    localStorage.setItem('vibe_panel_ps_wp', state.panelPsWp);
+    const name = document.getElementById('camper_name_input').value.trim();
+    
+    // 1. Salvataggio Locale (quello che avevi già)
+    localStorage.setItem('vibe_camper_name', name);
+    localStorage.setItem('vibe_batt_ah',      state.battAh);
+    localStorage.setItem('vibe_panel_wp',     state.panelWp);
+    localStorage.setItem('vibe_ps_ah',        state.psAh);
+    localStorage.setItem('vibe_panel_ps_wp',  state.panelPsWp);
 
-    const display = document.getElementById('camper-name-display');
-    if (display && name) display.innerText = name.toUpperCase();
+    const display = document.getElementById('camper-name-display');
+    if (display && name) display.innerText = name.toUpperCase();
 
-    const btn = document.getElementById('btn-save-name');
-    if (btn) {
-        btn.style.background = '#16a34a';
-        setTimeout(() => { btn.style.background = ''; }, 1500);
-    }
+    // 2. Feedback visivo sul tasto
+    const btn = document.getElementById('btn-save-name');
+    if (btn) {
+        const originalText = btn.innerText;
+        btn.innerText = "SALVATAGGIO IN CORSO... ⏳";
+        btn.style.background = '#f59e0b'; // Arancione durante l'invio
+        
+        // 3. INVIO AL CLOUD (Chiamiamo la funzione che hai già sotto)
+        salvaConfigurazioneSuCloud().then(success => {
+            if(success) {
+                btn.style.background = '#16a34a'; // Verde se ok
+                btn.innerText = "CONFIGURAZIONE SALVATA! ✅";
+            } else {
+                btn.style.background = '#dc2626'; // Rosso se errore
+                btn.innerText = "ERRORE SALVAGGIO ❌";
+            }
+            setTimeout(() => { 
+                btn.style.background = ''; 
+                btn.innerText = originalText;
+            }, 2500);
+        });
+    }
 }
 
 function loadSavedData() {
@@ -609,6 +628,31 @@ function updateConversions() {
     if (pConvEl) pConvEl.innerText = Math.round(pWh / 12.8);
 }
 
+async function salvaConfigurazioneSuCloud() {
+    const utente = localStorage.getItem('utente_corrente') || sessionStorage.getItem('utente_corrente');
+    if (!utente) return false; 
+
+    // Prendiamo i dati direttamente dall'oggetto 'state' che gestisci nel Garage
+    const dati = {
+        action: "salvaDatiCamper",
+        username: utente,
+        lineaA: state.panelWp,     // W_Pannelli_Linea_A
+        lineaB: state.panelPsWp,   // W_Pannelli_Linea_B
+        batteria: state.battAh     // Capacita_Batteria
+    };
+
+    try {
+        const response = await fetch(URL_SCRIPT_GOOGLE, {
+            method: 'POST',
+            body: JSON.stringify(dati)
+        });
+        const res = await response.json();
+        return res.success;
+    } catch (e) {
+        console.error("❌ Errore nel salvataggio cloud:", e);
+        return false;
+    }
+}
 /* =========================================================
    7. DATE E SELECTOR
    ========================================================= */
