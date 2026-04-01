@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (isLocalValid || isSessionValid) {
         document.getElementById('lockScreen').style.display = 'none';
+       inizializzaProfilo();
     }
 
     // 2. Event Listener per il tasto login
@@ -88,7 +89,7 @@ async function validaAccesso() {
                 // Pulizia di sicurezza
                 localStorage.removeItem('vibe_auth_valid');
             }
-            
+            inizializzaProfilo();
             // Nascondiamo il lockscreen
             document.getElementById('lockScreen').style.display = 'none';
         } else {
@@ -100,5 +101,38 @@ async function validaAccesso() {
         console.error("Errore:", e);
         alert("Errore di connessione al database.");
         btn.disabled = false;
+    }
+}
+
+/* =========================================================
+   GESTIONE PROFILO E LOGOUT
+   ========================================================= */
+
+function inizializzaProfilo() {
+    // Recupera il nome dell'utente loggato (da localStorage o sessionStorage)
+    const nome = localStorage.getItem('utente_corrente') || sessionStorage.getItem('utente_corrente') || "Camperista";
+    
+    // 1. Aggiorna il Nome e l'Iniziale nell'interfaccia
+    const displayNome = document.getElementById('displayUserName');
+    const displayAvatar = document.getElementById('userAvatar');
+    
+    if (displayNome) displayNome.innerText = nome;
+    if (displayAvatar) displayAvatar.innerText = nome.charAt(0).toUpperCase();
+
+    // 2. Configura il tasto Logout
+    const btnLogout = document.getElementById('btnLogout');
+    if (btnLogout) {
+        btnLogout.onclick = () => {
+            if (confirm("Vuoi uscire dal Garage di Vibe Solar?")) {
+                // Cancella tutti i dati di sessione
+                localStorage.removeItem('vibe_auth_valid');
+                localStorage.removeItem('utente_corrente');
+                sessionStorage.removeItem('vibe_auth_valid');
+                sessionStorage.removeItem('utente_corrente');
+                
+                // Ricarica la pagina per tornare al login
+                location.reload();
+            }
+        };
     }
 }
