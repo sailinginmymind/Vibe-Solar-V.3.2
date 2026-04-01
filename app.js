@@ -628,40 +628,32 @@ function updateConversions() {
 }
 
 async function salvaConfigurazioneSuCloud() {
-    // 1. Recuperiamo l'utente loggato per sapere a chi associare i dati nel database
     const utente = localStorage.getItem('utente_corrente') || sessionStorage.getItem('utente_corrente');
     if (!utente) return false; 
 
-    // 2. Recuperiamo il nome del camper direttamente dall'elemento testuale del Garage
-    // Sostituisci 'camperNameDisplay' con l'ID reale dello span/h2 che contiene il nome del camper
-    const nomeCamperElement = document.getElementById('camperNameDisplay');
+    // 1. CORREZIONE ID: Usiamo 'camper-name-display' (quello usato nel resto del file)
+    const nomeCamperElement = document.getElementById('camper-name-display');
     const nomeCamper = nomeCamperElement ? nomeCamperElement.innerText : "Il mio Camper";
 
-    // 3. Prepariamo l'oggetto con tutti i dati tecnici da inviare a Google
+    // 2. CORREZIONE VARIABILE: Usiamo 'state.psAh' che è il nome corretto nello stato
     const dati = {
         action: "salvaDatiCamper",
         username: utente,
-        nomeCamper: nomeCamper,         // Il nome che appare in alto nel Garage
-        lineaA: state.panelWp,          // Watt Pannelli Fissi
-        lineaB: state.panelPsWp,        // Watt Pannelli Power Station
-        batteriaAh: state.battAh,       // Capacità Batteria Servizi (in Ah)
-        powerStationWh: state.psWh      // Capacità Power Station (in Wh)
+        nomeCamper: nomeCamper,
+        lineaA: state.panelWp,
+        lineaB: state.panelPsWp,
+        batteriaAh: state.battAh,
+        powerStationWh: state.psAh // <--- Qui usiamo il valore corretto
     };
 
     try {
-        // 4. Inviamo i dati allo Script di Google tramite una chiamata POST
         const response = await fetch(URL_SCRIPT_GOOGLE, {
             method: 'POST',
-            body: JSON.stringify(dati) // Trasformiamo l'oggetto in una stringa JSON
+            body: JSON.stringify(dati)
         });
-
-        // 5. Riceviamo la risposta dal server
         const res = await response.json();
-        
-        // Restituisce true se il salvataggio è riuscito, false altrimenti
         return res.success;
     } catch (e) {
-        // Gestione in caso di problemi di rete o errori dello script
         console.error("❌ Errore nel salvataggio cloud:", e);
         return false;
     }
@@ -680,7 +672,7 @@ async function sincronizzaDatiGarage() {
             state.panelWp = parseFloat(res.data.lineaA) || 0;
             state.panelPsWp = parseFloat(res.data.lineaB) || 0;
             state.battAh = parseFloat(res.data.batteriaAh) || 0;
-            state.psWh = parseFloat(res.data.powerStationWh) || 0;
+            state.psAh = parseFloat(res.data.powerStationWh) || 0;
 
             // 2. Aggiorniamo il Nome del Camper nell'interfaccia
             const displayNome = document.getElementById('camperName');
