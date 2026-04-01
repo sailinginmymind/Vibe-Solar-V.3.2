@@ -2,8 +2,6 @@
    STYLE.CSS — Vibe Solar v3.0
    Organizzazione: Temi → Reset → Layout → Componenti → Navbar → Media Query
    ================================================================= */
-
-
 /* -----------------------------------------------------------------
    1. VARIABILI CSS (TEMI)
    ----------------------------------------------------------------- */
@@ -35,23 +33,19 @@ body.tema-grigio {
     --bg-card:  rgba(35, 35, 35, 0.8);
     --bg-badge: rgba(255, 255, 255, 0.05);
 }
-
-
 /* -----------------------------------------------------------------
    2. RESET & BASE
    ----------------------------------------------------------------- */
-
-* {
-    box-sizing: border-box; /* Questo dice al browser: includi il padding nel 100% */
-    -webkit-tap-highlight-color: transparent;
+*, *::before, *::after {
+    box-sizing: border-box !important;
 }
 
 html {
-    width: 100%;
-    overflow-x: hidden; 
-    height: 100%;
     margin: 0;
     padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+    height: 100%;
 }
 
 body {
