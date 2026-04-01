@@ -1108,6 +1108,9 @@ h2 {
    15. NAVBAR
    ----------------------------------------------------------------- */
 
+/* -----------------------------------------------------------------
+   15. NAVBAR (FIX SAFARI PC)
+   ----------------------------------------------------------------- */
 .nav-bar {
     position: fixed;
     bottom: max(20px, env(safe-area-inset-bottom));
@@ -1116,10 +1119,18 @@ h2 {
     width: 95%;
     max-width: 550px;
     height: 75px;
-    background: var(--bg-puro) !important;
-    background-color: rgba(15, 23, 42, 0.95) !important;
-   -webkit-backdrop-filter: blur(20px) saturate(180%);
+    
+    /* 1. Il trucco per Safari PC: background lineare che forza l'opacità */
+    background: linear-gradient(var(--bg-puro), var(--bg-puro)) !important;
+    background-color: #0f172a !important; /* Fallback solido se le variabili falliscono */
+    
+    /* 2. Backdrop filter con prefisso per Apple */
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     backdrop-filter: blur(20px) saturate(180%);
+    
+    /* 3. Aumentiamo l'opacità complessiva per Safari */
+    opacity: 0.98 !important;
+
     display: flex;
     align-items: center;
     padding: 0 15px;
