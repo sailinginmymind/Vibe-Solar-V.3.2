@@ -1,7 +1,7 @@
 /* =========================================================
    ACCESS.JS - Gestione Sicurezza e Registro Accessi
    ========================================================= */
-const URL_SCRIPT_GOOGLE = "https://script.google.com/macros/s/AKfycbw7bWRb8dsFZ-glTEU0EoM-mu_PSdm_6KQtFcPnNDW4n7uE3spFFuiDsgMe4MAPgbQ/exec";
+const URL_SCRIPT_GOOGLE = "https://script.google.com/macros/s/AKfycbyUuvEa54vMsoT_BGXiwiVor4s6Sw1EjSktSwjUVyJ5etMiAGYIUoZhFvIGZaT9pBRL/exec";
 
 document.addEventListener('DOMContentLoaded', async () => {
     const isLocalValid = localStorage.getItem('vibe_auth_valid') === 'true';
