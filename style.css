@@ -175,6 +175,14 @@ h2 {
     margin-bottom: 15px;
     display: block;
 }
+/* Ingrandisce specificamente il titolo nel Garage */
+#view-garage .section-title {
+    font-size: 2.2rem !important; /* Molto più grande */
+    margin-top: 10px;
+    margin-bottom: 25px;
+    letter-spacing: 3px;
+    text-shadow: 0 0 15px var(--accento); /* Effetto neon più marcato */
+}
 
 
 /* -----------------------------------------------------------------
