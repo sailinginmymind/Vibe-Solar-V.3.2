@@ -30,26 +30,36 @@ let state = {
    ========================================================= */
 
 window.onload = () => {
-    initEventListeners();
-    initSliders();
-    loadSavedData();
+    initEventListeners();
+    initSliders();
+    
+    // 1. Carica i dati dal localStorage nello 'state'
+    loadSavedData();
 
-    const savedColor = localStorage.getItem('vibe_solar_bg_color');
-    if (savedColor) changeBg(savedColor);
+    // 2. FORZA l'aggiornamento dei badge gialli (Ah <-> Wh) 
+    // subito dopo aver caricato i dati, così non vedi i valori di default
+    if (typeof updateCapacitaVisuale === 'function') {
+        updateCapacitaVisuale();
+    }
 
-    if (typeof updateConversions === 'function') updateConversions();
+    const savedColor = localStorage.getItem('vibe_solar_bg_color');
+    if (savedColor) changeBg(savedColor);
 
-    setupStars();
-    generaBottoniGiorni();
+    // Se usi ancora questa vecchia funzione, lasciala, 
+    // ma updateCapacitaVisuale è quella che gestisce i box Dashboard
+    if (typeof updateConversions === 'function') updateConversions();
 
-    switchView('live', document.querySelector('[data-view="live"]'));
+    setupStars();
+    generaBottoniGiorni();
 
-    const latVal = document.getElementById('input-lat').value;
-    if (!latVal) {
-        handleGpsSync();
-    } else {
-        updateAll();
-    }
+    switchView('live', document.querySelector('[data-view="live"]'));
+
+    const latVal = document.getElementById('input-lat').value;
+    if (!latVal) {
+        handleGpsSync();
+    } else {
+        updateAll();
+    }
 };
 
 function initEventListeners() {
