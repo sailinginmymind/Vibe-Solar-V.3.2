@@ -1051,6 +1051,76 @@ h2 {
     font-weight: bold;
 }
 
+/* --- PROFILO E LOGOUT GARAGE --- */
+.profile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px 20px;
+    border-radius: 16px;
+    margin-bottom: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+#userAvatar {
+    width: 42px;
+    height: 42px;
+    background: var(--accento);
+    color: var(--bg-puro);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 18px;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+}
+
+.user-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-text span {
+    font-size: 10px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#userNameDisplay {
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+}
+
+/* Tasto Logout Minimal */
+#btnLogout {
+    background: rgba(244, 63, 94, 0.1); /* Rosso molto tenue */
+    color: #f43f5e;
+    border: 1px solid rgba(244, 63, 94, 0.2);
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+#btnLogout:hover {
+    background: #f43f5e;
+    color: white;
+}
 
 /* -----------------------------------------------------------------
    14. PULSANTI (MINI-BTN, EDIT, SAVE)
