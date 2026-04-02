@@ -754,19 +754,31 @@ async function sincronizzaDatiGarage() {
 
 // Assicurati di avere questa funzione nel tuo app.js per gestire entrambi i box
 function updateCapacitaVisuale() {
-    const badgeBatt = document.getElementById('w_services'); // Badge Impianto Fisso
-    const badgePs   = document.getElementById('w_ps');       // Badge Power Station
+    const badgeBatt = document.getElementById('w_services'); // Sotto Impianto Fisso
+    const badgePs   = document.getElementById('w_ps');       // Sotto Power Station
 
+    // 1. GESTIONE IMPIANTO FISSO (Base dati in Ah: state.battAh)
     if (badgeBatt) {
-        const val = state.isWh ? (state.battAh * 12.8) : state.battAh;
-        badgeBatt.innerText = Math.round(val) + (state.isWh ? ' Wh' : ' Ah');
+        if (state.isWh) {
+            // Sopra ci sono i Wh -> Sotto mostriamo gli Ah
+            badgeBatt.innerText = Math.round(state.battAh) + ' Ah';
+        } else {
+            // Sopra ci sono gli Ah -> Sotto mostriamo i Wh
+            const valWh = state.battAh * 12.8;
+            badgeBatt.innerText = Math.round(valWh) + ' Wh';
+        }
     }
 
+    // 2. GESTIONE POWER STATION (Base dati in Wh: state.psAh)
     if (badgePs) {
-        // Se la Power Station è già salvata come Wh nel DB, non moltiplicare per 12.8 
-        // o viceversa in base a come memorizzi state.psAh
-        const val = state.isWh ? state.psAh : (state.psAh / 12.8);
-        badgePs.innerText = Math.round(val) + (state.isWh ? ' Wh' : ' Ah');
+        if (state.isWh) {
+            // Sopra ci sono i Wh -> Sotto mostriamo gli Ah
+            const valAh = state.psAh / 12.8;
+            badgePs.innerText = Math.round(valAh) + ' Ah';
+        } else {
+            // Sopra ci sono gli Ah -> Sotto mostriamo i Wh
+            badgePs.innerText = Math.round(state.psAh) + ' Wh';
+        }
     }
 }
 /* =========================================================
