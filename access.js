@@ -6,19 +6,27 @@ const URL_SCRIPT_GOOGLE = "https://script.google.com/macros/s/AKfycbyUuvEa54vMso
 document.addEventListener('DOMContentLoaded', async () => {
     const isLocalValid = localStorage.getItem('vibe_auth_valid') === 'true';
     const isSessionValid = sessionStorage.getItem('vibe_auth_valid') === 'true';
+    const lockScreen = document.getElementById('lockScreen');
 
     if (isLocalValid || isSessionValid) {
-        // Scarica i dati prima di nascondere la schermata di blocco
+        // --- UTENTE GIÀ LOGGATO ---
+        // Nascondiamo subito la lockScreen prima di fare qualsiasi altra cosa
+        if (lockScreen) lockScreen.style.display = 'none';
+        
+        // Carichiamo i dati e inizializziamo il profilo in background
         await sincronizzaDatiGarage(); 
-        document.getElementById('lockScreen').style.display = 'none';
         inizializzaProfilo();
+    } else {
+        // --- UTENTE NON LOGGATO ---
+        // Se non è loggato, allora e solo allora mostriamo il login
+        if (lockScreen) lockScreen.style.display = 'flex';
     }
 
     // 2. Event Listener per il tasto login
     const btn = document.getElementById('btnUnlock');
     if (btn) btn.addEventListener('click', validaAccesso);
 
-    // 3. Permetti l'invio anche con il tasto "Invio" sulla tastiera
+    // 3. Permetti l'invio anche con il tasto "Invio"
     const inputs = [document.getElementById('userInput'), document.getElementById('passInput')];
     inputs.forEach(input => {
         if (input) {
