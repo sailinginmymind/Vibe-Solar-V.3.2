@@ -91,19 +91,33 @@ async function validaAccesso() {
         
         const result = await response.json();
 
-        if (result.success) {
-            // Gestione Sessione
+      if (result.success) {
+            // 1. PULIZIA PREVENTIVA
+            // Cancelliamo i permessi da entrambi i magazzini per non fare confusione
+            localStorage.removeItem('vibe_auth_valid');
+            sessionStorage.removeItem('vibe_auth_valid');
+
+            // 2. GESTIONE SCELTA UTENTE
             if (rememberMe) {
+                // RESTA COLLEGATO: Scriviamo nel "magazzino a lungo termine"
                 localStorage.setItem('vibe_auth_valid', 'true');
                 localStorage.setItem('utente_corrente', user);
             } else {
+                // NON RESTA COLLEGATO: Scriviamo nel "magazzino della scheda aperta"
                 sessionStorage.setItem('vibe_auth_valid', 'true');
                 sessionStorage.setItem('utente_corrente', user);
-                localStorage.removeItem('vibe_auth_valid');
+                // Ci assicuriamo che non ci siano rimasugli nel localStorage
+                localStorage.removeItem('utente_corrente'); 
             }
+
+            // 3. ENTRATA NEL GARAGE
             await sincronizzaDatiGarage();
             inizializzaProfilo();
-            document.getElementById('lockScreen').style.display = 'none';
+            
+            // Nascondiamo il login
+            const ls = document.getElementById('lockScreen');
+            if (ls) ls.style.display = 'none';
+            
         } else {
             // --- GESTIONE ERRORI SPECIFICI ---
             let messaggio = "❌ Credenziali errate";
@@ -146,7 +160,7 @@ async function validaAccesso() {
 
 function inizializzaProfilo() {
     // Recupera il nome dell'utente loggato
-    const nome = localStorage.getItem('utente_corrente') || sessionStorage.getItem('utente_corrente') || "Camperista";
+   const nome = sessionStorage.getItem('utente_corrente') || localStorage.getItem('utente_corrente') || "Camperista";
     
     // 1. Aggiorna il Nome e l'Iniziale nell'interfaccia
     // NOTA: Ho cambiato 'displayUserName' in 'userNameDisplay' per matchare il nuovo HTML
