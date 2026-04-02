@@ -137,37 +137,48 @@ async function validaAccesso() {
    ========================================================= */
 
 function inizializzaProfilo() {
-    // Recupera il nome dell'utente loggato (da localStorage o sessionStorage)
+    // Recupera il nome dell'utente loggato
     const nome = localStorage.getItem('utente_corrente') || sessionStorage.getItem('utente_corrente') || "Camperista";
     
     // 1. Aggiorna il Nome e l'Iniziale nell'interfaccia
-    const displayNome = document.getElementById('displayUserName');
+    // NOTA: Ho cambiato 'displayUserName' in 'userNameDisplay' per matchare il nuovo HTML
+    const displayNome = document.getElementById('userNameDisplay'); 
     const displayAvatar = document.getElementById('userAvatar');
     
-    if (displayNome) displayNome.innerText = nome;
-    if (displayAvatar) displayAvatar.innerText = nome.charAt(0).toUpperCase();
+    if (displayNome) {
+        displayNome.innerText = nome;
+    }
+    
+    if (displayAvatar) {
+        // Mettiamo l'iniziale in maiuscolo
+        displayAvatar.innerText = nome.charAt(0).toUpperCase();
+        
+        // Piccola chicca extra: rimuoviamo eventuali stili inline vecchi 
+        // così comanda solo il nuovo CSS
+        displayAvatar.style.width = "";
+        displayAvatar.style.height = "";
+    }
 
-  // 2. Configura il tasto Logout
+    // 2. Configura il tasto Logout
     const btnLogout = document.getElementById('btnLogout');
     if (btnLogout) {
         btnLogout.onclick = () => {
             if (confirm("Vuoi uscire dal Garage di Vibe Solar?")) {
-                // --- PULIZIA TOTALE SESSIONE ---
+                // Pulizia sessione
                 localStorage.removeItem('vibe_auth_valid');
                 localStorage.removeItem('utente_corrente');
                 sessionStorage.removeItem('vibe_auth_valid');
                 sessionStorage.removeItem('utente_corrente');
 
-                // --- PULIZIA DATI TECNICI CAMPER (Il "Deep Clean") ---
+                // Pulizia dati tecnici (Deep Clean)
                 localStorage.removeItem('vibe_camper_name');
                 localStorage.removeItem('vibe_batt_ah');
                 localStorage.removeItem('vibe_panel_wp');
-                localStorage.removeItem('vibe_ps_ah'); // O vibe_ps_wh a seconda di come lo salvi
+                localStorage.removeItem('vibe_ps_ah');
                 localStorage.removeItem('vibe_ps_wh');
                 localStorage.removeItem('vibe_panel_ps_wp');
                 localStorage.removeItem('vibe_panel_tilt');
                 
-                // Ricarica la pagina per resettare lo stato Javascript e tornare al login
                 location.reload();
             }
         };
