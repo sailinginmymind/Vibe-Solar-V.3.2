@@ -1459,21 +1459,25 @@ h2 {
 }
 
 /* STILE DELLO RESTA COLLEGATO MODERNO */
+/* CONTENITORE: Centra perfettamente il blocco tra input e bottone */
 .remember-me-wrapper {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    margin-bottom: 25px;
-    color: #94a3b8;
-    font-size: 14px;
+    gap: 15px;           /* Più spazio tra switch e testo */
+    margin: 20px 0;      /* Margine sopra e sotto per distanziarlo dagli input e dal tasto */
+    width: 100%;         /* Occupa tutta la larghezza per centrare bene */
+    color: #f8fafc;      /* Testo quasi bianco per massima leggibilità */
+    font-size: 16px;     /* Testo leggermente più grande */
+    font-weight: 500;
 }
 
+/* Lo Switch (Leggermente più grande) */
 .switch {
     position: relative;
     display: inline-block;
-    width: 34px;
-    height: 20px;
+    width: 50px;         /* Da 34px a 50px */
+    height: 26px;        /* Da 20px a 26px */
 }
 
 .switch input {
@@ -1482,32 +1486,37 @@ h2 {
     height: 0;
 }
 
+/* Lo sfondo dello switch */
 .slider {
     position: absolute;
     cursor: pointer;
     top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #334155;
+    background-color: #475569; /* Grigio più chiaro (si vede meglio) */
     transition: .4s;
     border-radius: 34px;
+    border: 1px solid rgba(255,255,255,0.1); /* Bordino sottile */
 }
 
+/* Il pallino bianco */
 .slider:before {
     position: absolute;
     content: "";
-    height: 14px;
-    width: 14px;
-    left: 3px;
+    height: 18px;        /* Pallino più grande */
+    width: 18px;
+    left: 4px;
     bottom: 3px;
     background-color: white;
     transition: .4s;
     border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
+/* Quando è ACCESO */
 input:checked + .slider {
     background-color: #38bdf8;
-    box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.6); /* Bagliore più forte */
 }
 
 input:checked + .slider:before {
-    transform: translateX(14px);
+    transform: translateX(24px); /* Movimento adeguato alla nuova larghezza */
 }
