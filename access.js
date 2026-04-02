@@ -210,9 +210,7 @@ function inizializzaProfilo() {
 function mostraLoader(stato) {
     const loader = document.getElementById('global-loader');
     if (!loader) return;
-    if (stato) {
-        loader.classList.add('active');
-    } else {
-        loader.classList.remove('active');
-    }
+    
+    // Se stato è true mostra 'flex', se è false nascondi con 'none'
+    loader.style.display = stato ? 'flex' : 'none';
 }
