@@ -1430,3 +1430,30 @@ h2 {
     0% { left: -40%; }
     100% { left: 100%; }
 }
+
+/** adattamento telefono in orizzontale login *//
+@media (max-height: 500px) and (orientation: landscape) {
+    .login-container {
+        padding: 15px;
+        margin: 10px auto;
+    }
+    
+    .login-container div:first-child { /* L'emoji del camper */
+        font-size: 50px !important; 
+        margin-bottom: 5px !important;
+    }
+
+    .login-container h1 {
+        font-size: 1.5rem !important;
+        margin-bottom: 5px !important;
+    }
+
+    .login-container p {
+        margin-bottom: 15px !important;
+    }
+    
+    #lockScreen {
+        overflow-y: auto; /* Permette lo scroll se il telefono è davvero piccolo */
+        padding: 20px 0;
+    }
+}
