@@ -1334,28 +1334,30 @@ h2 {
    ----------------------------------------------------------------- */
 
 #lockScreen {
-    position: fixed;   /* <--- FONDAMENTALE: lo blocca sopra a tutto */
+    position: fixed;         /* Lo inchioda sopra a tutto */
     top: 0;
     left: 0;
-    width: 100vw;      /* Occupa tutta la larghezza */
-    height: 100vh;     /* Occupa tutta l'altezza */
-    background-color: #0f172a; /* Colore solido (var(--bg-puro)) */
-    z-index: 10000;    /* Sta sopra la dashboard e la nav-bar */
-    display: flex;     /* Lo rende visibile all'avvio */
+    width: 100vw;            /* Copre tutta la larghezza */
+    height: 100vh;           /* Copre tutta l'altezza */
+    background-color: #0f172a !important; /* Colore solido SCURO (o var(--bg-puro)) */
+    z-index: 99999;          /* Numero altissimo per stare sopra la navbar */
+    display: flex;           /* Di base è attivo */
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
+    overflow: hidden;        /* Impedisce di scrollare la dashboard sotto */
 }
 
-/* Contenitore centrale per limitare la larghezza degli input */
+/* Assicuriamoci che il contenitore interno sia visibile e centrato */
 .login-container {
-    width: 100%;
-    max-width: 300px; /* Impedisce agli input di toccare i bordi del telefono */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0 20px;
+    background: #1e293b;     /* Colore leggermente più chiaro del fondo */
+    padding: 40px 30px;
+    border-radius: 24px;
+    text-align: center;
+    width: 85%;
+    max-width: 400px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    border: 1px solid rgba(56, 189, 248, 0.2);
 }
 
 #lockScreen input {
