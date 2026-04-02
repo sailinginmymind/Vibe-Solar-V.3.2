@@ -715,35 +715,32 @@ async function sincronizzaDatiGarage() {
         const res = await response.json();
 
         if (res.success && res.data) {
-            // 1. Aggiorniamo lo STATO globale
+            // 1. Aggiorniamo lo STATO
             state.panelWp = parseFloat(res.data.lineaA) || 0;
             state.panelPsWp = parseFloat(res.data.lineaB) || 0;
             state.battAh = parseFloat(res.data.batteriaAh) || 0;
             state.psAh = parseFloat(res.data.powerStationWh) || 0;
 
-            // 2. Salvataggio locale per persistenza
+            // 2. AGGIORNIAMO FISICAMENTE GLI INPUT (così vedi i numeri nelle caselle)
+            const inputBatt = document.getElementById('batt-ah');
+            const inputPs = document.getElementById('ps-ah'); // o l'ID che usi per l'input PS
+            
+            if (inputBatt) inputBatt.value = state.battAh;
+            if (inputPs)   inputPs.value   = state.psAh;
+
+            // 3. SALVATAGGIO LOCALE
             localStorage.setItem('vibe_panel_wp', state.panelWp);
             localStorage.setItem('vibe_panel_ps_wp', state.panelPsWp);
             localStorage.setItem('vibe_batt_ah', state.battAh);
             localStorage.setItem('vibe_ps_wh', state.psAh); 
             localStorage.setItem('vibe_camper_name', res.data.nomeCamper || "");
 
-            // 3. AGGIORNAMENTO INTERFACCIA
-            const displayNome = document.getElementById('camperName');
-            if (displayNome && res.data.nomeCamper) {
-                displayNome.innerText = res.data.nomeCamper;
-            }
-
-            // --- IL FIX PER I BADGE ---
-            // Forza il ricalcolo dei badge sotto i box (Ah <-> Wh)
-            // Assicurati che nel tuo app.js esista questa funzione o chiamala direttamente:
+            // 4. IL FIX: Chiamiamo le funzioni che già hai per aggiornare la UI
+            // updateAll() calcola i Watt, updateCapacitaVisuale() converte i badge gialli
             updateCapacitaVisuale(); 
-
-            // Carica gli input e aggiorna i calcoli solari
-            loadSavedData(); 
             updateAll();
             
-            console.log("✅ Sincronizzazione completata");
+            console.log("✅ Sincronizzazione completata e UI aggiornata");
         }
     } catch (e) {
         console.error("❌ Errore sincronizzazione:", e);
