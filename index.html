@@ -13,6 +13,21 @@
     <link rel="icon" type="image/png" href="Assets/Images/LOGO192x192.png">
     <link rel="apple-touch-icon" href="./Assets/Images/LOGO192x192(1).png">
     <link rel="manifest" href="manifest.json">
+    <script>
+        (function() {
+            const isLocal = localStorage.getItem('vibe_auth_valid') === 'true';
+            const isSession = sessionStorage.getItem('vibe_auth_valid') === 'true';
+            
+            if (isLocal || isSession) {
+                // Se loggato, forza il login a restare nascosto prima che la pagina appaia
+                document.documentElement.style.display = 'none';
+                window.addEventListener('DOMContentLoaded', () => {
+                    document.getElementById('lockScreen').style.display = 'none';
+                    document.documentElement.style.display = '';
+                });
+            }
+        })();
+    </script>
 </head>
 <body>
     <div id="lockScreen">
