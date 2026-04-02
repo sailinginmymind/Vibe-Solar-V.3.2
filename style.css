@@ -1490,25 +1490,30 @@ input:checked + .slider:before {
 }
 
 /* -----------------------------------------------------------------
-   20. GLOBAL-LOADER (Barra di Caricamento al login)
+   20. RIPRISTINO LOADER (VERSIONE DEFINITIVA)
    ----------------------------------------------------------------- */
 #global-loader {
-    display: none; /* Viene mostrato via JS all'invio */
-    justify-content: center;
+    display: none;        /* Gestito da access.js */
+    flex-direction: column;
     align-items: center;
-    margin-top: 20px;
+    justify-content: center;
+    width: 100%;
+    margin-top: 15px;      /* Spazio tra il tasto e il loader */
+    min-height: 40px;      /* Riserva lo spazio visivo */
 }
 
 #global-loader div {
-    width: 30px;
-    height: 30px;
-    border: 3px solid rgba(56, 189, 248, 0.2);
-    border-top: 3px solid var(--accento);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
+    width: 30px !important;
+    height: 30px !important;
+    border: 4px solid rgba(56, 189, 248, 0.2) !important;
+    border-top: 4px solid var(--accento) !important;
+    border-radius: 50% !important;
+    animation: spin 0.8s linear infinite !important;
+    display: block !important;
 }
 
+/* Assicuriamoci che l'animazione esista e sia corretta */
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
