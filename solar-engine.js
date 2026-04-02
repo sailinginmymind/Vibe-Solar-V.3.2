@@ -38,18 +38,21 @@ const SolarEngine = {
      * @param {number|null} [sunAltitude=null] - Altezza solare precalcolata; se null viene ricalcolata
      * @returns {number} Potenza prodotta in Watt (≥ 0)
      */
-    calculatePower(hDec, sunH, setH, panelWp, cloudCover, tilt = 0, sunAltitude = null) {
-        // 1. Notte: nessuna produzione, ma appena il sole sorge, inizia la produzione energetica
-        if (currentHour < sunriseDec || currentHour > sunsetDec) {
+  calculatePower(hDec, sunH, setH, panelWp, cloudCover, tilt = 0, sunAltitude = null) {
+    // 1. Notte: Usiamo i parametri corretti passati alla funzione
+    if (hDec < sunH || hDec > setH) {
         return 0;
     }
-        // 2. Altezza solare: usa il valore fornito oppure lo calcola dalla progressione
-        let effectiveAltitude = sunAltitude;
-        if (effectiveAltitude === null || effectiveAltitude <= 0) {
-            const progress = (hDec - sunH) / (setH - sunH);
-            effectiveAltitude = Math.sin(progress * Math.PI) * 65;
-        }
-        if (effectiveAltitude <= 0) return 0;
+    
+    // 2. Altezza solare
+    let effectiveAltitude = sunAltitude;
+    if (effectiveAltitude === null) {
+        const progress = (hDec - sunH) / (setH - sunH);
+        effectiveAltitude = Math.sin(progress * Math.PI) * 65;
+    }
+    
+    // Se l'altezza è 0 o meno (tramonto fatto), forza 0
+    if (effectiveAltitude <= 0) return 0;
 
         // 3. Fattore di incidenza: differenza angolare tra il tilt impostato e quello ottimale
         const optimalTilt     = this.getOptimalTilt(effectiveAltitude);
@@ -84,28 +87,31 @@ const SolarEngine = {
      * Calcola la potenza basandosi sulla radiazione solare reale (W/m²).
      * AGGIORNATO: Aggiunto controllo orario alba/tramonto per evitare valori notturni.
      */
-    calculatePowerByRadiation(hDec, sunH, setH, panelWp, radiation, tilt = 0, sunAltitude = 0) {
-        // 1. Controllo Notte: se siamo fuori dalla finestra luce, forza 0W
-        if (hDec < sunH || hDec > setH) return 0;
+  calculatePowerByRadiation(hDec, sunH, setH, panelWp, radiation, tilt = 0, sunAltitude = 0) {
+    // 1. Controllo Notte Rigido: se l'ora è fuori dalla finestra o il sole è sotto l'orizzonte
+    // Questo azzera la barra delle 20:00 se il tramonto è alle 19:45
+    if (hDec < sunH || hDec > setH || sunAltitude <= 0) return 0;
 
-        // 2. Controllo sicurezza su radiazione e altezza sole
-        if (!radiation || radiation <= 0 || sunAltitude <= 0) return 0;
+    // 2. Filtro Radiazione Minima: sotto i 15 W/m² è praticamente buio, evitiamo residui grafici
+    if (!radiation || radiation < 15) return 0;
 
-        // 3. Il pannello eroga il Wp a 1000 W/m²
-        const basePower = panelWp * (radiation / 1000);
+    // 3. Il pannello eroga il Wp a 1000 W/m²
+    const basePower = panelWp * (radiation / 1000);
 
-        // 4. Fattore di incidenza
-        const optimalTilt = this.getOptimalTilt(sunAltitude);
-        const angularDiff = Math.abs(tilt - optimalTilt);
-        const radDiff = (angularDiff * Math.PI) / 180;
-        const incidenceFactor = Math.max(0, Math.cos(radDiff));
+    // 4. Fattore di incidenza
+    const optimalTilt = this.getOptimalTilt(sunAltitude);
+    const angularDiff = Math.abs(tilt - optimalTilt);
+    const radDiff = (angularDiff * Math.PI) / 180;
+    const incidenceFactor = Math.max(0, Math.cos(radDiff));
 
-        // 5. Efficienza di sistema (0.82)
-        const systemEfficiency = 0.82;
+    // 5. Efficienza di sistema (0.82)
+    const systemEfficiency = 0.82;
 
-        const finalPower = basePower * incidenceFactor * systemEfficiency;
-        return Math.max(0, finalPower);
-    },
+    const finalPower = basePower * incidenceFactor * systemEfficiency;
+    
+    // Ritorna 0 se il valore è insignificante
+    return finalPower < 0.1 ? 0 : finalPower;
+},
     
     /**
      * Stima il tempo necessario per raggiungere un target di SOC con la potenza corrente.
