@@ -708,7 +708,6 @@ async function sincronizzaDatiGarage() {
     const utente = localStorage.getItem('utente_corrente') || sessionStorage.getItem('utente_corrente');
     if (!utente) return;
 
-    // --- 1. MOSTRA IL CARICAMENTO ---
     mostraLoader(true);
 
     try {
@@ -716,38 +715,58 @@ async function sincronizzaDatiGarage() {
         const res = await response.json();
 
         if (res.success && res.data) {
-            // Aggiorniamo lo STATO globale dell'app
+            // 1. Aggiorniamo lo STATO globale
             state.panelWp = parseFloat(res.data.lineaA) || 0;
             state.panelPsWp = parseFloat(res.data.lineaB) || 0;
             state.battAh = parseFloat(res.data.batteriaAh) || 0;
             state.psAh = parseFloat(res.data.powerStationWh) || 0;
 
-            // Aggiorniamo il Nome del Camper nell'interfaccia
+            // 2. Salvataggio locale per persistenza
+            localStorage.setItem('vibe_panel_wp', state.panelWp);
+            localStorage.setItem('vibe_panel_ps_wp', state.panelPsWp);
+            localStorage.setItem('vibe_batt_ah', state.battAh);
+            localStorage.setItem('vibe_ps_wh', state.psAh); 
+            localStorage.setItem('vibe_camper_name', res.data.nomeCamper || "");
+
+            // 3. AGGIORNAMENTO INTERFACCIA
             const displayNome = document.getElementById('camperName');
             if (displayNome && res.data.nomeCamper) {
                 displayNome.innerText = res.data.nomeCamper;
             }
 
-            // Salviamo nel localStorage locale
-            localStorage.setItem('vibe_panel_wp', state.panelWp);
-            localStorage.setItem('vibe_panel_ps_wp', state.panelPsWp);
-            localStorage.setItem('vibe_batt_ah', state.battAh);
-            
-            // NOTA: Qui ho corretto state.psWh in state.psAh come definito sopra
-            localStorage.setItem('vibe_ps_wh', state.psAh); 
-            localStorage.setItem('vibe_camper_name', res.data.nomeCamper);
+            // --- IL FIX PER I BADGE ---
+            // Forza il ricalcolo dei badge sotto i box (Ah <-> Wh)
+            // Assicurati che nel tuo app.js esista questa funzione o chiamala direttamente:
+            updateCapacitaVisuale(); 
 
-            // Forziamo l'aggiornamento della grafica
+            // Carica gli input e aggiorna i calcoli solari
             loadSavedData(); 
             updateAll();
             
-            console.log("✅ Sincronizzazione completata per: " + res.data.nomeCamper);
+            console.log("✅ Sincronizzazione completata");
         }
     } catch (e) {
         console.error("❌ Errore sincronizzazione:", e);
     } finally {
-        // --- 2. NASCONDI IL CARICAMENTO ---
         mostraLoader(false);
+    }
+}
+
+// Assicurati di avere questa funzione nel tuo app.js per gestire entrambi i box
+function updateCapacitaVisuale() {
+    const badgeBatt = document.getElementById('w_services'); // Badge Impianto Fisso
+    const badgePs   = document.getElementById('w_ps');       // Badge Power Station
+
+    if (badgeBatt) {
+        const val = state.isWh ? (state.battAh * 12.8) : state.battAh;
+        badgeBatt.innerText = Math.round(val) + (state.isWh ? ' Wh' : ' Ah');
+    }
+
+    if (badgePs) {
+        // Se la Power Station è già salvata come Wh nel DB, non moltiplicare per 12.8 
+        // o viceversa in base a come memorizzi state.psAh
+        const val = state.isWh ? state.psAh : (state.psAh / 12.8);
+        badgePs.innerText = Math.round(val) + (state.isWh ? ' Wh' : ' Ah');
     }
 }
 /* =========================================================
