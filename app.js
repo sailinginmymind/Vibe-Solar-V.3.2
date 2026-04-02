@@ -18,7 +18,7 @@ let state = {
     currentPsSOC: 50,
     camperName:  localStorage.getItem('vibe_camper_name') || "",
     battAh:      parseFloat(localStorage.getItem('vibe_batt_ah'))      || 0,
-    psAh:        parseFloat(localStorage.getItem('vibe_ps_ah'))        || 0,
+    psAh:        parseFloat(localStorage.getItem('vibe_ps_wh'))        || 0, // Usa vibe_ps_wh per coerenza con la sincronizzazione
     panelWp:     parseFloat(localStorage.getItem('vibe_panel_wp'))     || 0,
     panelPsWp:   parseFloat(localStorage.getItem('vibe_panel_ps_wp'))  || 0,
     weatherData: null,
@@ -624,18 +624,31 @@ function mostraLoader(stato) {
 }
 
 function loadSavedData() {
-    const savedName = localStorage.getItem('vibe_camper_name');
-    if (savedName) {
-        state.camperName = savedName;
-        const display = document.getElementById('camper-name-display');
-        if(display) display.innerText = savedName.toUpperCase();
-        const input = document.getElementById('camper_name_input');
-        if(input) input.value = savedName;
-    }
-    document.getElementById('batt_val').innerText     = state.battAh;
-    document.getElementById('panel_val').innerText    = state.panelWp;
-    document.getElementById('ps_val').innerText       = state.psAh;
-    document.getElementById('panel_ps_val').innerText = state.panelPsWp;
+    const savedName = localStorage.getItem('vibe_camper_name');
+    if (savedName) {
+        state.camperName = savedName;
+        const display = document.getElementById('camper-name-display');
+        if(display) display.innerText = savedName.toUpperCase();
+        const input = document.getElementById('camper_name_input');
+        if(input) input.value = savedName;
+    }
+
+    // Aggiorna i valori numerici nel Garage (se li visualizzi lì)
+    if (document.getElementById('batt_val')) document.getElementById('batt_val').innerText = state.battAh;
+    if (document.getElementById('panel_val')) document.getElementById('panel_val').innerText = state.panelWp;
+    if (document.getElementById('ps_val')) document.getElementById('ps_val').innerText = state.psAh;
+    if (document.getElementById('panel_ps_val')) document.getElementById('panel_ps_val').innerText = state.panelPsWp;
+
+    // --- IL FIX FONDAMENTALE ---
+    // 1. Popola gli input principali della Dashboard (quelli che vedi nei box)
+    const inputBatt = document.getElementById('batt-ah');
+    const inputPs = document.getElementById('ps-ah');
+    
+    if (inputBatt) inputBatt.value = state.battAh;
+    if (inputPs)   inputPs.value   = state.psAh;
+
+    // 2. Forza la conversione nei badge gialli
+    updateCapacitaVisuale();
 }
 
 function editSpec(type) {
