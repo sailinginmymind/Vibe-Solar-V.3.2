@@ -1330,28 +1330,29 @@ h2 {
 }
 
 /* -----------------------------------------------------------------
-   17. PAGINA DI LOGIN
+   17. PAGINA DI LOGIN (CORRETTA & SENZA SCROLL)
    ----------------------------------------------------------------- */
 
 #lockScreen {
-    position: fixed;         /* Lo inchioda sopra a tutto */
+    position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;            /* Copre tutta la larghezza */
-    height: 100vh;           /* Copre tutta l'altezza */
-    background-color: #0f172a !important; /* Colore solido SCURO (o var(--bg-puro)) */
-    z-index: 99999;          /* Numero altissimo per stare sopra la navbar */
-    display: flex;           /* Di base è attivo */
+    width: 100vw;
+    height: 100vh;
+    background-color: #0f172a !important;
+    z-index: 99999;
+    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    overflow: hidden !important; /* DISATTIVA LO SCROLL */
+    overflow: hidden !important; /* BLOCCO SCROLL TOTALE */
+    touch-action: none;          /* Impedisce il trascinamento su mobile */
 }
 
-/* Assicuriamoci che il contenitore interno sia visibile e centrato */
+/* Contenitore Login */
 .login-container {
-    background: #1e293b;     /* Colore leggermente più chiaro del fondo */
-    padding: 40px 30px;
+    background: #1e293b;
+    padding: 30px;
     border-radius: 24px;
     text-align: center;
     width: 85%;
@@ -1369,7 +1370,7 @@ h2 {
     margin: 8px 0;
     border-radius: 12px;
     outline: none;
-    font-size: 16px; /* Evita lo zoom automatico su iPhone */
+    font-size: 16px;
 }
 
 #btnUnlock {
@@ -1385,129 +1386,26 @@ h2 {
     margin-top: 10px;
 }
 
-/* Barra di caricamento sotto il tasto */
-#global-loader {
-    width: 100%;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.1);
-    margin-top: 20px; 
-    margin-bottom: 5px;
-    border-radius: 10px;
-    display: none;
-    overflow: hidden;
-    position: relative;
-}
-
-#global-loader div {
-    width: 40%;
-    height: 100%;
-    background: var(--accento);
-    box-shadow: 0 0 10px var(--accento);
-    position: absolute;
-    animation: loading-bar 1.2s infinite ease-in-out;
-}
-
-#global-loader.active {
-    display: block !important;
-}
-
-/* Effetti e Animazioni */
-.btn-loading {
-    opacity: 0.7;
-    cursor: not-allowed;
-    filter: grayscale(0.5);
-}
-
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-10px); }
-    75% { transform: translateX(10px); }
-}
-
-.shake { animation: shake 0.4s ease-in-out; }
-
-@keyframes loading-bar {
-    0% { left: -40%; }
-    100% { left: 100%; }
-}
-
-/* FIX DEFINITIVO LOGIN ORIZZONTALE */
-@media (max-height: 500px) and (orientation: landscape) {
-    #lockScreen {
-        display: flex !important;
-        align-items: flex-start; /* Inizia dall'alto per permettere lo scroll */
-        overflow-y: auto !important;
-        padding: 10px 0 !important;
-        height: 100vh;
-    }
-
-    .login-container {
-        margin: auto !important; /* Centra il box se c'è spazio */
-        padding: 15px !important;
-        width: 95% !important;
-        max-width: 450px !important;
-    }
-
-    /* Questo punta all'emoji con stile inline e la forza a 45px */
-    .login-container div[style*="font-size"] {
-        font-size: 45px !important; 
-        margin-bottom: 5px !important;
-    }
-
-    .login-container h1 {
-        font-size: 1.2rem !important;
-        margin-bottom: 2px !important;
-    }
-
-    .login-container p {
-        margin-bottom: 10px !important;
-        font-size: 12px !important;
-    }
-
-    /* Compattiamo gli input e il tasto per recuperare spazio */
-    .login-container input {
-        margin-bottom: 8px !important;
-        padding: 8px !important;
-    }
-
-    .remember-me-wrapper {
-        margin: 10px 0 !important;
-    }
-
-    #btnUnlock {
-        padding: 10px !important;
-        margin-top: 5px !important;
-    }
-}
-
-@media (max-height: 500px) and (orientation: landscape) {
-    /* 1. Blocchiamo lo scroll sulla pagina intera */
-    html, body {
-        overflow: hidden !important;
-        height: 100% !important;
-        position: fixed; /* Questo "congela" la posizione su molti smartphone */
-        width: 100%;
-    }
-/* STILE DELLO RESTA COLLEGATO MODERNO */
-/* CONTENITORE: Centra perfettamente il blocco tra input e bottone */
+/* -----------------------------------------------------------------
+   18. STILE SWITCH "RESTA COLLEGATO" (FUNZIONANTE SEMPRE)
+   ----------------------------------------------------------------- */
 .remember-me-wrapper {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 15px;           /* Più spazio tra switch e testo */
-    margin: 20px 0;      /* Margine sopra e sotto per distanziarlo dagli input e dal tasto */
-    width: 100%;         /* Occupa tutta la larghezza per centrare bene */
-    color: #f8fafc;      /* Testo quasi bianco per massima leggibilità */
-    font-size: 16px;     /* Testo leggermente più grande */
+    gap: 12px;
+    margin: 15px 0;
+    width: 100%;
+    color: #f8fafc;
+    font-size: 14px;
     font-weight: 500;
 }
 
-/* Lo Switch (Leggermente più grande) */
 .switch {
     position: relative;
     display: inline-block;
-    width: 50px;         /* Da 34px a 50px */
-    height: 26px;        /* Da 20px a 26px */
+    width: 46px;
+    height: 24px;
 }
 
 .switch input {
@@ -1516,37 +1414,77 @@ h2 {
     height: 0;
 }
 
-/* Lo sfondo dello switch */
 .slider {
     position: absolute;
     cursor: pointer;
     top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #475569; /* Grigio più chiaro (si vede meglio) */
+    background-color: #475569;
     transition: .4s;
     border-radius: 34px;
-    border: 1px solid rgba(255,255,255,0.1); /* Bordino sottile */
 }
 
-/* Il pallino bianco */
 .slider:before {
     position: absolute;
     content: "";
-    height: 18px;        /* Pallino più grande */
+    height: 18px;
     width: 18px;
-    left: 4px;
+    left: 3px;
     bottom: 3px;
     background-color: white;
     transition: .4s;
     border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
-/* Quando è ACCESO */
 input:checked + .slider {
     background-color: #38bdf8;
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.6); /* Bagliore più forte */
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
 }
 
 input:checked + .slider:before {
-    transform: translateX(24px); /* Movimento adeguato alla nuova larghezza */
+    transform: translateX(22px);
+}
+
+/* -----------------------------------------------------------------
+   19. MEDIA QUERY: LOGIN ORIZZONTALE (COMPATTO)
+   ----------------------------------------------------------------- */
+@media (max-height: 500px) and (orientation: landscape) {
+    #lockScreen {
+        padding: 5px 0 !important;
+    }
+
+    .login-container {
+        padding: 12px 25px !important;
+        max-width: 450px !important;
+    }
+
+    /* Emoji Camper */
+    .login-container div[style*="font-size"] {
+        font-size: 40px !important; 
+        margin-bottom: 2px !important;
+    }
+
+    .login-container h1 {
+        font-size: 1.2rem !important;
+        margin: 0 !important;
+    }
+
+    .login-container p {
+        margin-bottom: 5px !important;
+        font-size: 11px !important;
+    }
+
+    .login-container input {
+        padding: 8px !important;
+        margin: 4px 0 !important;
+    }
+
+    .remember-me-wrapper {
+        margin: 8px 0 !important;
+        transform: scale(0.9);
+    }
+
+    #btnUnlock {
+        padding: 10px !important;
+        margin-top: 5px !important;
+    }
 }
