@@ -1345,7 +1345,7 @@ h2 {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    overflow: hidden;        /* Impedisce di scrollare la dashboard sotto */
+    overflow: hidden !important; /* DISATTIVA LO SCROLL */
 }
 
 /* Assicuriamoci che il contenitore interno sia visibile e centrato */
@@ -1480,6 +1480,14 @@ h2 {
     }
 }
 
+@media (max-height: 500px) and (orientation: landscape) {
+    /* 1. Blocchiamo lo scroll sulla pagina intera */
+    html, body {
+        overflow: hidden !important;
+        height: 100% !important;
+        position: fixed; /* Questo "congela" la posizione su molti smartphone */
+        width: 100%;
+    }
 /* STILE DELLO RESTA COLLEGATO MODERNO */
 /* CONTENITORE: Centra perfettamente il blocco tra input e bottone */
 .remember-me-wrapper {
