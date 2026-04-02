@@ -1334,18 +1334,18 @@ h2 {
    ----------------------------------------------------------------- */
 
 #lockScreen {
-    display: none;
+    position: fixed;   /* <--- FONDAMENTALE: lo blocca sopra a tutto */
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: var(--bg-puro);
-    z-index: 10000;
-    display: flex;
+    width: 100vw;      /* Occupa tutta la larghezza */
+    height: 100vh;     /* Occupa tutta l'altezza */
+    background-color: #0f172a; /* Colore solido (var(--bg-puro)) */
+    z-index: 10000;    /* Sta sopra la dashboard e la nav-bar */
+    display: flex;     /* Lo rende visibile all'avvio */
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    overflow: hidden; /* Blocca ogni sforamento interno */
+    overflow: hidden;
 }
 
 /* Contenitore centrale per limitare la larghezza degli input */
