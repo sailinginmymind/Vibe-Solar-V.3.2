@@ -738,32 +738,48 @@ async function sincronizzaDatiGarage() {
         const res = await response.json();
 
         if (res.success && res.data) {
-            // 1. Aggiorniamo lo STATO
+            // 1. Aggiorniamo lo STATO globale
             state.panelWp = parseFloat(res.data.lineaA) || 0;
             state.panelPsWp = parseFloat(res.data.lineaB) || 0;
             state.battAh = parseFloat(res.data.batteriaAh) || 0;
             state.psAh = parseFloat(res.data.powerStationWh) || 0;
+            state.camperName = res.data.nomeCamper || "";
 
-            // 2. AGGIORNIAMO FISICAMENTE GLI INPUT (così vedi i numeri nelle caselle)
-            const inputBatt = document.getElementById('batt-ah');
-            const inputPs = document.getElementById('ps-ah'); // o l'ID che usi per l'input PS
+            // 2. AGGIORNAMENTO FISICO DEL GARAGE (Per vederli subito senza refresh)
+            const displayNomeGarage = document.getElementById('camper-name-display');
+            const inputNomeGarage = document.getElementById('camper_name_input');
             
-            if (inputBatt) inputBatt.value = state.battAh;
-            if (inputPs)   inputPs.value   = state.psAh;
+            if (displayNomeGarage) displayNomeGarage.innerText = state.camperName.toUpperCase();
+            if (inputNomeGarage)   inputNomeGarage.value = state.camperName;
 
-            // 3. SALVATAGGIO LOCALE
+            // Aggiorna le scritte numeriche nel Garage (batt_val, ps_val, ecc.)
+            const elBatt = document.getElementById('batt_val');
+            const elPan  = document.getElementById('panel_val');
+            const elPs   = document.getElementById('ps_val');
+            const elPanPs = document.getElementById('panel_ps_val');
+
+            if (elBatt)  elBatt.innerText  = state.battAh;
+            if (elPan)   elPan.innerText   = state.panelWp;
+            if (elPs)    elPs.innerText    = state.psAh;
+            if (elPanPs) elPanPs.innerText = state.panelPsWp;
+
+            // 3. SALVATAGGIO LOCALE (Per i futuri avvii)
             localStorage.setItem('vibe_panel_wp', state.panelWp);
             localStorage.setItem('vibe_panel_ps_wp', state.panelPsWp);
             localStorage.setItem('vibe_batt_ah', state.battAh);
             localStorage.setItem('vibe_ps_wh', state.psAh); 
-            localStorage.setItem('vibe_camper_name', res.data.nomeCamper || "");
+            localStorage.setItem('vibe_camper_name', state.camperName);
 
-            // 4. IL FIX: Chiamiamo le funzioni che già hai per aggiornare la UI
-            // updateAll() calcola i Watt, updateCapacitaVisuale() converte i badge gialli
-            updateCapacitaVisuale(); 
-            updateAll();
+            // 4. AGGIORNAMENTO DASHBOARD E CONVERSIONI
+            // Aggiorna il nome in alto nella Dashboard
+            const displayNomeDash = document.getElementById('camperName');
+            if (displayNomeDash) displayNomeDash.innerText = state.camperName;
+
+            updateCapacitaVisuale(); // Aggiorna i badge gialli Wh/Ah
+            updateConversions();     // Aggiorna le conversioni nel Garage
+            updateAll();             // Ricalcola i grafici
             
-            console.log("✅ Sincronizzazione completata e UI aggiornata");
+            console.log("✅ Sincronizzazione e UI aggiornate istantaneamente");
         }
     } catch (e) {
         console.error("❌ Errore sincronizzazione:", e);
