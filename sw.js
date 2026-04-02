@@ -71,14 +71,20 @@ if ('serviceWorker' in navigator) {
 }
 
 function mostraBannerAggiornamento() {
-    // Creiamo il banner dinamicamente via JS per non toccare l'HTML
+    // 1. Creiamo l'elemento div
     const banner = document.createElement('div');
-    banner.id = 'update-banner';
-    banner.innerHTML = `
-        <div style="background: var(--accento); color: #0f172a; padding: 15px; position: fixed; bottom: 85px; left: 5%; width: 90%; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 10001; animation: slideUp 0.5s ease-out;">
-            <span style="font-weight: 800; font-size: 14px;">✨ NUOVA VERSIONE DISPONIBILE!</span>
-            <button onclick="window.location.reload()" style="background: #0f172a; color: white; border: none; padding: 8px 15px; border-radius: 10px; font-weight: bold; cursor: pointer;">AGGIORNA</button>
-        </div>
-    `;
+    
+    // 2. Gli assegniamo la classe che hai appena scritto nel CSS
+    banner.className = 'update-banner';
+    
+    // 3. Inseriamo il testo (puoi aggiungere un'emoji per renderlo più "Vibe")
+    banner.innerHTML = `✨ Aggiornamento disponibile! Clicca qui 🚀`;
+    
+    // 4. Rendiamo il banner cliccabile per ricaricare la pagina
+    banner.onclick = () => {
+        window.location.reload();
+    };
+
+    // 5. Lo aggiungiamo al body
     document.body.appendChild(banner);
 }
