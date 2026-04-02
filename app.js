@@ -470,28 +470,40 @@ function updateReportUI(totalPower, sunH, setH) {
     const currentH   = (timeInput && timeInput.value) ? parseInt(timeInput.value.split(':')[0]) : -1;
 
 for (let h = startH; h <= endH; h++) {
-        const hProgress  = (h - sunH) / (setH - sunH);
-        const hAltitude  = Math.max(0, Math.sin(hProgress * Math.PI) * 65);
+    // --- FIX LOGICO ---
+    // Se l'ora della colonna (h) è superiore all'ora del tramonto (setH), 
+    // forziamo tutto a zero prima ancora di calcolare.
+    
+    let hRadiation = 0;
+    let hP = 0;
+    let hAltitude = 0;
+
+    if (h <= setH) {
+        const hProgress = (h - sunH) / (setH - sunH);
+        hAltitude = Math.max(0, Math.sin(hProgress * Math.PI) * 65);
         
-        // 1. Recupera la radiazione specifica per quell'ora
-        const hRadiation = state.weatherData.hourly.shortwave_radiation ? (state.weatherData.hourly.shortwave_radiation[h] || 0) : 0;
+        // 1. Recupera la radiazione solo se siamo prima del tramonto
+        hRadiation = state.weatherData.hourly.shortwave_radiation ? (state.weatherData.hourly.shortwave_radiation[h] || 0) : 0;
         
-     // 2. Calcola la potenza (W) per quell'ora
-        const hP = SolarEngine.calculatePowerByRadiation(
-            h, sunH, setH,             
+        // 2. Calcola la potenza
+        hP = SolarEngine.calculatePowerByRadiation(
+            h, sunH, setH,               
             state.panelWp + state.panelPsWp, 
             hRadiation, 
             state.panelTilt, 
             hAltitude
         );
+    } 
+    // Se h > setH, hRadiation e hP rimangono 0 automaticamente grazie alle variabili inizializzate sopra
 
-        dailyTotal += hP;
+    dailyTotal += hP;
 
-        // 3. Crea l'elemento visivo della barra
-        const bar = document.createElement('div');
-        bar.className    = 'bar';
-        bar.style.height = Math.max(5, (hP / maxPotenza * 100)) + '%';
-        
+    // 3. Crea l'elemento visivo della barra
+    const bar = document.createElement('div');
+    bar.className    = 'bar';
+    // Se hP è 0, la barra sarà piatta (altezza minima 0 o 5px per estetica)
+    bar.style.height = hP > 0 ? Math.max(5, (hP / maxPotenza * 100)) + '%' : '2px'; 
+    
         // Colora la barra dell'ora attuale
         if (h === currentH) {
             bar.style.background = 'var(--accento)';
