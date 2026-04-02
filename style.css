@@ -1431,30 +1431,52 @@ h2 {
     100% { left: 100%; }
 }
 
-/** adattamento telefono in orizzontale login *//
+/* FIX DEFINITIVO LOGIN ORIZZONTALE */
 @media (max-height: 500px) and (orientation: landscape) {
-    .login-container {
-        padding: 15px;
-        margin: 10px auto;
+    #lockScreen {
+        display: flex !important;
+        align-items: flex-start; /* Inizia dall'alto per permettere lo scroll */
+        overflow-y: auto !important;
+        padding: 10px 0 !important;
+        height: 100vh;
     }
-    
-    .login-container div:first-child { /* L'emoji del camper */
-        font-size: 50px !important; 
+
+    .login-container {
+        margin: auto !important; /* Centra il box se c'è spazio */
+        padding: 15px !important;
+        width: 95% !important;
+        max-width: 450px !important;
+    }
+
+    /* Questo punta all'emoji con stile inline e la forza a 45px */
+    .login-container div[style*="font-size"] {
+        font-size: 45px !important; 
         margin-bottom: 5px !important;
     }
 
     .login-container h1 {
-        font-size: 1.5rem !important;
-        margin-bottom: 5px !important;
+        font-size: 1.2rem !important;
+        margin-bottom: 2px !important;
     }
 
     .login-container p {
-        margin-bottom: 15px !important;
+        margin-bottom: 10px !important;
+        font-size: 12px !important;
     }
-    
-    #lockScreen {
-        overflow-y: auto; /* Permette lo scroll se il telefono è davvero piccolo */
-        padding: 20px 0;
+
+    /* Compattiamo gli input e il tasto per recuperare spazio */
+    .login-container input {
+        margin-bottom: 8px !important;
+        padding: 8px !important;
+    }
+
+    .remember-me-wrapper {
+        margin: 10px 0 !important;
+    }
+
+    #btnUnlock {
+        padding: 10px !important;
+        margin-top: 5px !important;
     }
 }
 
