@@ -348,10 +348,6 @@ async function updateAll(isManualTime = false) {
 
     if (!lat || !lng) return;
 
-    if (!isGpsSyncing && typeof updateCityName === 'function') {
-        updateCityName(lat, lng);
-    }
-
     if (timeInput && !timeInput.value) {
         const now = new Date();
         timeInput.value = now.getHours().toString().padStart(2, '0') + ':' +
