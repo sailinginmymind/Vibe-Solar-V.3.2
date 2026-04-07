@@ -358,9 +358,14 @@ async function updateAll(isManualTime = false) {
                           now.getMinutes().toString().padStart(2, '0');
     }
 
-    try {
+   try {
         const dateStr = dataSelezionata.toISOString().split('T')[0];
-        state.weatherData = await WeatherAPI.fetchForecast(lat, lng, dateStr, !isManualTime);
+
+        // Se abbiamo già i dati e stiamo solo muovendo lo slider (isManualTime è true), 
+        // NON rifare la chiamata internet. Usa quelli che hai!
+        if (!state.weatherData || !isManualTime) {
+            state.weatherData = await WeatherAPI.fetchForecast(lat, lng, dateStr, !isManualTime);
+        }
 
         if (!state.weatherData || !state.weatherData.hourly) return;
 
