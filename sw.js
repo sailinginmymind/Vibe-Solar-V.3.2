@@ -47,13 +47,9 @@ self.addEventListener('activate', (event) => {
 
 // 3. FETCH: Serve i file dalla cache o da internet
 self.addEventListener('fetch', (event) => {
-  // SE LA RICHIESTA È PER IL METEO, VAI DIRETTAMENTE SU INTERNET (NON TOCCARE CACHE)
-  if (event.request.url.includes('api.open-meteo.com')) {
-    return; // Questa riga dice al SW di non interferire con il meteo
-  }
-
   event.respondWith(
     caches.match(event.request).then((response) => {
+      // Se il file è in cache, lo restituisce; altrimenti lo scarica
       return response || fetch(event.request);
     })
   );
