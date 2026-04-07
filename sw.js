@@ -36,9 +36,10 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // SALVA-VITA: Ignora le chiamate meteo, falle andare dirette su internet
-  if (event.request.url.includes('api.open-meteo.com')) {
-    return; 
+  // ECCEZIONI: Non gestire il meteo e non gestire la geocodifica (Nominatim)
+  if (event.request.url.includes('api.open-meteo.com') || 
+      event.request.url.includes('nominatim.openstreetmap.org')) {
+    return; // Lascia che la richiesta vada diretta su internet senza passare dal SW
   }
 
   event.respondWith(
