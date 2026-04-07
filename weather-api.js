@@ -1,19 +1,17 @@
 /**
- * WEATHER-API.JS - Vibe Solar v3.0
- * Gestisce il GPS del browser, le chiamate all'API meteo (Open-Meteo)
- * e la sincronizzazione dell'orologio con il fuso orario locale del camper.
+ * WEATHER-API.JS - Vibe Solar v3.0 (Versione Corretta)
  */
 
-/** Offset UTC in secondi per il fuso orario della posizione corrente (aggiornato da fetchForecast) */
 window.timezoneOffsetSeconds = null;
+
+// Variabile di controllo per evitare chiamate API multiple contemporanee
+let isFetchingWeather = false;
 
 const WeatherAPI = {
 
     /**
-     * Richiede le coordinate GPS al browser tramite l'API Geolocation.
-     * Usa enableHighAccuracy: false per compatibilità con le PWA locali,
-     * dove il browser preferisce non attivare il chip GPS hardware.
-     * @returns {Promise<GeolocationCoordinates>} Oggetto con latitude e longitude
+     * Richiede le coordinate GPS al browser.
+     * Aumentato il timeout e aggiunta gestione errori più robusta.
      */
     getUserLocation() {
         return new Promise((resolve, reject) => {
@@ -23,8 +21,8 @@ const WeatherAPI = {
             }
             const options = {
                 enableHighAccuracy: false,
-                timeout:            10000,
-                maximumAge:         0,
+                timeout:            20000, // Aumentato a 20 secondi per evitare il "Timeout expired"
+                maximumAge:         30000, // Accetta una posizione vecchia di 30 secondi per velocizzare
             };
             navigator.geolocation.getCurrentPosition(
                 pos  => resolve(pos.coords),
@@ -38,31 +36,43 @@ const WeatherAPI = {
     },
 
     /**
-     * Recupera le previsioni meteo orarie da Open-Meteo per una data specifica.
-     * Aggiorna anche window.timezoneOffsetSeconds con l'offset del fuso orario locale.
-     *
-     * Variabili richieste:
-     *  - temperature_2m, relative_humidity_2m, cloud_cover, wind_speed_10m (orarie)
-     *  - sunrise, sunset (giornaliere)
-     *
-     * @param {string|number} lat          - Latitudine
-     * @param {string|number} lng          - Longitudine
-     * @param {string}        date         - Data nel formato "YYYY-MM-DD"
-     * @param {boolean}       [updateInputs=false] - Se true, sincronizza ora e data negli input
-     * @returns {Promise<Object|null>} Dati meteo JSON di Open-Meteo, oppure null in caso di errore
+     * Recupera le previsioni meteo da Open-Meteo.
+     * Include protezione contro richieste multiple e gestione errori di rete.
      */
     async fetchForecast(lat, lng, date, updateInputs = false) {
-        try {
-           const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}` +
-            `&hourly=temperature_2m,relative_humidity_2m,cloud_cover,wind_speed_10m,shortwave_radiation` + 
-            `&daily=sunrise,sunset` +
-            `&timezone=auto` +
-            `&start_date=${date}&end_date=${date}`;
-            console.log("URL generato:", url);
-            const response = await fetch(url);
-            const data     = await response.json();
+        // 1. Protezione anti-loop: se c'è già una chiamata in corso, esci subito
+        if (isFetchingWeather) {
+            console.warn("Chiamata meteo già in corso. Richiesta ignorata per evitare blocchi IP.");
+            return null;
+        }
 
-            // Aggiorna l'offset del fuso orario e sincronizza gli input se richiesto
+        // Verifica che le coordinate siano valide (evita TypeError: Failed to fetch)
+        if (!lat || !lng) {
+            console.error("Coordinate non valide fornite all'API");
+            return null;
+        }
+
+        isFetchingWeather = true;
+
+        try {
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}` +
+             `&hourly=temperature_2m,relative_humidity_2m,cloud_cover,wind_speed_10m,shortwave_radiation` + 
+             `&daily=sunrise,sunset` +
+             `&timezone=auto` +
+             `&start_date=${date}&end_date=${date}`;
+            
+            console.log("Richiesta API Meteo:", url);
+
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                // Se il server risponde con errore (es. Too many requests)
+                const errorData = await response.json();
+                throw new Error(errorData.reason || "Errore Server");
+            }
+
+            const data = await response.json();
+
             if (data.utc_offset_seconds !== undefined) {
                 window.timezoneOffsetSeconds = data.utc_offset_seconds;
                 if (updateInputs) {
@@ -71,23 +81,23 @@ const WeatherAPI = {
             }
 
             return data;
+
         } catch (err) {
-            console.error('Errore API Meteo (Open-Meteo):', err);
+            console.error('Errore API Meteo (Open-Meteo):', err.message);
+            // Se vedi "Too many concurrent requests", questo alert ti avvisa
+            if (err.message.includes("concurrent")) {
+                alert("Troppe richieste al server meteo. Attendi 1 minuto e riprova.");
+            }
             return null;
+        } finally {
+            // Sblocca la possibilità di fare nuove chiamate dopo 2 secondi
+            setTimeout(() => { isFetchingWeather = false; }, 2000);
         }
     }
 };
 
 /**
- * Calcola l'ora locale corretta per il fuso orario del camper (non del dispositivo)
- * e la visualizza nel display centrale. Aggiorna anche gli input ora/data se necessario.
- *
- * Logica:
- *  1. Prende l'ora UTC del dispositivo.
- *  2. Applica l'offset ricevuto dall'API (window.timezoneOffsetSeconds).
- *  3. Aggiorna il display e, se "forza=true", anche gli input.
- *
- * @param {boolean} [forza=false] - Se true, sovrascrive il valore degli input anche se già popolati
+ * Gestione Orologio e fuso orario
  */
 function updateDashboardClock(forza = false) {
     const clockElement = document.getElementById('display-hour-center');
@@ -98,7 +108,6 @@ function updateDashboardClock(forza = false) {
     const oraLocale = new Date();
     let timeToUse   = oraLocale;
 
-    // Corregge il tempo in base al fuso orario della posizione GPS del camper
     if (window.timezoneOffsetSeconds !== null) {
         const utcTimeMs = oraLocale.getTime() + (oraLocale.getTimezoneOffset() * 60000);
         timeToUse = new Date(utcTimeMs + (window.timezoneOffsetSeconds * 1000));
@@ -107,15 +116,12 @@ function updateDashboardClock(forza = false) {
     const h = timeToUse.getHours().toString().padStart(2, '0');
     const m = timeToUse.getMinutes().toString().padStart(2, '0');
 
-    // Aggiorna il display centrale dell'ora
     clockElement.innerText = `${h}:${m}`;
 
-    // Aggiorna l'input ora solo se forzato o se vuoto
     if (forza || (inputTime && !inputTime.value)) {
         if (inputTime) inputTime.value = `${h}:${m}`;
     }
 
-    // Aggiorna l'input data solo se forzato o se vuoto
     if (forza || (inputDate && !inputDate.value)) {
         if (inputDate) {
             const yyyy = timeToUse.getFullYear();
