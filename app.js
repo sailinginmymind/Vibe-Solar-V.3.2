@@ -347,7 +347,11 @@ async function updateAll(isManualTime = false) {
     const timeInput = document.getElementById('input-time');
 
     if (!lat || !lng) return;
-
+    // --- NUOVA VERSIONE VELOCE ---
+    // Aggiorniamo il nome della città solo se è un aggiornamento automatico (non manuale dello slider)
+    if (!isGpsSyncing && !isManualTime && typeof updateCityName === 'function') {
+        updateCityName(lat, lng);
+    }
     if (timeInput && !timeInput.value) {
         const now = new Date();
         timeInput.value = now.getHours().toString().padStart(2, '0') + ':' +
