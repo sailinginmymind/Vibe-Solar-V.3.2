@@ -347,20 +347,23 @@ async function updateAll(isManualTime = false) {
     const timeInput = document.getElementById('input-time');
 
     if (!lat || !lng) return;
+
     // --- NUOVA VERSIONE VELOCE ---
     // Aggiorniamo il nome della città solo se è un aggiornamento automatico (non manuale dello slider)
     if (!isGpsSyncing && !isManualTime && typeof updateCityName === 'function') {
         updateCityName(lat, lng);
     }
+
     if (timeInput && !timeInput.value) {
         const now = new Date();
         timeInput.value = now.getHours().toString().padStart(2, '0') + ':' +
                           now.getMinutes().toString().padStart(2, '0');
     }
 
-   try {
+    try {
         const dateStr = dataSelezionata.toISOString().split('T')[0];
 
+        // --- LOGICA SALVA-FLUIDITÀ ---
         // Se abbiamo già i dati e stiamo solo muovendo lo slider (isManualTime è true), 
         // NON rifare la chiamata internet. Usa quelli che hai!
         if (!state.weatherData || !isManualTime) {
