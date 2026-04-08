@@ -2,7 +2,7 @@
    SERVICE WORKER - Vibe Solar v3.3.5
    ========================================================= */
 
-const CACHE_NAME = 'Vibe_Solar_v3.3.5'; 
+const CACHE_NAME = 'Vibe_Solar_v3.3.6'; 
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
