@@ -830,19 +830,26 @@ function updateCapacitaVisuale() {
    ========================================================= */
 
 function generaBottoniGiorni() {
-    const container = document.getElementById('days-selector');
-    if (!container) return;
-    container.innerHTML = '';
-    const oggi = new Date();
-    for (let i = 0; i < 7; i++) {
-        const d = new Date(oggi);
-        d.setDate(oggi.getDate() + i);
-        const btn = document.createElement('div');
-        btn.className = 'day-btn' + (d.toDateString() === dataSelezionata.toDateString() ? ' active' : '');
-        btn.innerHTML = `<span>${d.toLocaleDateString('it-IT', { weekday: 'short' }).charAt(0).toUpperCase()}</span><b>${d.getDate()}</b>`;
-        btn.onclick   = () => { dataSelezionata = new Date(d); aggiornaTuttaInterfaccia(); };
-        container.appendChild(btn);
-    }
+    const container = document.getElementById('days-selector');
+    if (!container) return;
+    container.innerHTML = '';
+    const oggi = new Date();
+    for (let i = 0; i < 7; i++) {
+        const d = new Date(oggi);
+        d.setDate(oggi.getDate() + i);
+        const btn = document.createElement('div');
+        btn.className = 'day-btn' + (d.toDateString() === dataSelezionata.toDateString() ? ' active' : '');
+        btn.innerHTML = `<span>${d.toLocaleDateString('it-IT', { weekday: 'short' }).charAt(0).toUpperCase()}</span><b>${d.getDate()}</b>`;
+        
+        btn.onclick = () => { 
+            dataSelezionata = new Date(d); 
+            // IMPORTANTE: Resettiamo i dati meteo così updateAll capisce che deve scaricare il nuovo giorno
+            state.weatherData = null; 
+            aggiornaTuttaInterfaccia(false); 
+        };
+        
+        container.appendChild(btn);
+    }
 }
 
 function aggiornaTuttaInterfaccia(isManual = true) {
