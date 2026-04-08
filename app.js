@@ -284,14 +284,33 @@ async function handleGpsSync() {
 }
 
 async function updateCityName(lat, lng) {
-    try {
-        const url      = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&accept-language=it`;
-        const response = await fetch(url);
-        const data     = await response.json();
-        const city     = data.address.city || data.address.town || data.address.village || 'POSIZIONE';
-        const el       = document.getElementById('city-input');
-        if (el) el.value = city.toUpperCase();
-    } catch (e) {}
+    try {
+        // Aggiungiamo un piccolo controllo: se non ci sono coordinate, usciamo
+        if (!lat || !lng) return;
+
+        const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&accept-language=it`;
+        
+        const response = await fetch(url, {
+            headers: {
+                // Questo header è fondamentale per evitare i blocchi CORS/429
+                'User-Agent': 'Vibe-Solar-App-v3.1 (tuaemail@esempio.com)'
+            }
+        });
+
+        if (!response.ok) throw new Error("Errore server Nominatim");
+
+        const data = await response.json();
+        const city = data.address.city || data.address.town || data.address.village || 'POSIZIONE';
+        
+        const el = document.getElementById('city-input');
+        if (el) el.value = city.toUpperCase();
+        
+    } catch (e) {
+        console.error("Errore updateCityName:", e);
+        // In caso di errore, mettiamo un fallback nel campo input
+        const el = document.getElementById('city-input');
+        if (el && !el.value) el.value = "POSIZIONE";
+    }
 }
 
 async function searchCityCoords(cityName) {
